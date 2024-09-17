@@ -60,52 +60,5 @@ Software util:
       [ comando de compilação e execução ]
       ```
 
-## 🤝 Colaboradores
-Agradecemos às seguintes pessoas que contribuíram para este projeto:
-<table>
-   <tr>
-      <td align="center">
-          <a href="#" title="LinkedIn de Carlos Candido">
-            <img src="#" width="100px;" alt="foto"/><br>
-            <sub>
-              <b>Carlos Candido</b>
-            </sub>
-          </a>
-      </td>
-      <td align="center">
-          <a href="#" title="LinkedIn de Carlos Eduardo">
-            <img src="#" width="100px;" alt="foto"/><br>
-            <sub>
-              <b>Carlos Eduardo</b>
-            </sub>
-          </a>
-      </td>
-      <td align="center">
-          <a href="#" title="LinkedIn de Gabriel">
-            <img src="#" width="100px;" alt="foto"/><br>
-            <sub>
-              <b>Gabriel Neves</b>
-            </sub>
-          </a>
-      </td>
-      <td align="center">
-          <a href="https://www.linkedin.com/in/vitoriabarbosaa/" title="LinkedIn de Vitória">
-            <img src="https://avatars.githubusercontent.com/u/93888309?v=4" width="100px;" alt="foto"/><br>
-            <sub>
-              <b>Vitória Barbosa</b>
-            </sub>
-          </a>
-      </td>
-      <td align="center">
-          <a href="#" title="linkedIn de Ycaru">
-            <img src="#" width="100px;" alt="foto"/><br>
-            <sub>
-              <b>Ycaru Nunes</b>
-            </sub>
-          </a>
-      </td>
-   </tr>
-</table><br>
-
 ## 📝 Licença
 Este projeto é licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
