@@ -4,18 +4,18 @@ import java.awt.*;
 import javax.swing.*;
 
 public class BackgroundPanel extends JPanel {
-    private Image backgroundImage;
+    private final Image BACKGROUND;
 
-    public BackgroundPanel(Image backgroundImage) {
-        this.backgroundImage = backgroundImage;
+    public BackgroundPanel(Image BACKGROUND) {
+        this.BACKGROUND = BACKGROUND;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         // Redimensiona a imagem para caber no painel
-        if (backgroundImage != null) {
-            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        if (BACKGROUND != null) {
+            g.drawImage(BACKGROUND, 0, 0, getWidth(), getHeight(), this);
         }
     }
 }

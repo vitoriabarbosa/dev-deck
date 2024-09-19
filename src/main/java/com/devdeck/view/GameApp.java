@@ -1,39 +1,67 @@
 package com.devdeck.view;
 
+import com.devdeck.model.Deck;
+import com.devdeck.model.Card;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class GameApp extends JPanel {
-    private Image cardImage;
+    int tableMargin;
+    int rectMargin;
+    Deck deck;
 
     public GameApp() {
-        cardImage = new ImageIcon("src/main/resources/card/java.png").getImage();
+        tableMargin = 30;
+        rectMargin = 20;
+        deck = new Deck(); // Cria o baralho
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Definindo dimensões da mesa e borda
-        int tableMargin = 50;
+        // Dimensões da mesa e borda
         int tableWidth = getWidth() - 2 * tableMargin;
         int tableHeight = getHeight() - 2 * tableMargin;
 
-        g.setColor(new Color(114,64,64));
+        // Cor das bordas
+        g.setColor(new Color(114, 64, 64));
         g.fillRect(0, 0, getWidth(), getHeight());
 
+        // Cor do fundo da tela
         g.setColor(new Color(0, 128, 0));
         g.fillRect(tableMargin, tableMargin, tableWidth, tableHeight);
 
-        // Desenha as cartas
+        // Dimensões e espaçamento das cartas
         int cardWidth = 180, cardHeight = 250;
-        int x = tableMargin + 20, y = tableMargin + 20; // Posições iniciais dentro da mesa verde
-        int rows = 1, cols = 5; // 2 fileiras, 5 cartas por fileira
+        int cardSpacing = 20;
+        int cardCols = 7; // Número de colunas de cartas na segunda fileira
 
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                g.drawImage(cardImage, x + j * (cardWidth + 10), y + i * (cardHeight + 10), cardWidth, cardHeight, this);
+        // Calcular o total de largura ocupada pelas cartas e o espaçamento entre elas
+        int totalCardsWidth = cardCols * cardWidth + (cardCols - 1) * cardSpacing;
+
+        // Centralizar as cartas horizontalmente na área verde
+        int cardXStart = tableMargin + (tableWidth - totalCardsWidth) / 2;
+
+        // Desenhar a primeira fileira (1 carta na primeira coluna, 4 nas últimas)
+        List<Card> cards = deck.getCards();
+        int firstRowCardY = tableMargin + rectMargin; // Posição Y da primeira fileira
+
+        // Desenhar a primeira fileira: carta na primeira posição e nas últimas 4
+        for (int i = 0; i < cardCols; i++) {
+            if (i == 0 || i >= 3) { // Desenha a primeira carta e as últimas quatro
+                g.drawImage(cards.get(i).getImage(), cardXStart + i * (cardWidth + cardSpacing), firstRowCardY, cardWidth, cardHeight, this);
             }
+        }
+
+        // Desenhar a segunda fileira (todas as 7 cartas)
+        int secondRowCardY = firstRowCardY + cardHeight + 2 * rectMargin; // Posição Y da segunda fileira
+
+        // Desenhar a segunda fileira com todas as cartas
+        for (int i = 0; i < cardCols; i++) {
+            g.drawImage(cards.get(i + cardCols).getImage(), cardXStart + i * (cardWidth + cardSpacing), secondRowCardY, cardWidth, cardHeight, this);
         }
     }
 
