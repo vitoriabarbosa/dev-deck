@@ -1,6 +1,6 @@
-package com.devdeck;
+package devdeck;
 
-import com.devdeck.view.InitialFrame;
+import devdeck.view.InitialFrame;
 
 public class MainApp {
     public static void main(String[] args) {

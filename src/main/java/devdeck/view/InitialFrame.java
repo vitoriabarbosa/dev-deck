@@ -1,6 +1,6 @@
-package com.devdeck.view;
+package devdeck.view;
 
-import com.devdeck.util.BackgroundPanel;
+import devdeck.utils.BackgroundPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +11,6 @@ import java.util.Objects;
  * Esta tela é exibida por um curto período antes de redirecionar para a tela do jogo.
  */
 public class InitialFrame extends JFrame {
-
     public InitialFrame() {
         setSize(1200, 800);
         setLocationRelativeTo(null);

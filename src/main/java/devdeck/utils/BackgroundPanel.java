@@ -1,4 +1,4 @@
-package com.devdeck.util;
+package devdeck.utils;
 
 import java.awt.*;
 import javax.swing.*;
