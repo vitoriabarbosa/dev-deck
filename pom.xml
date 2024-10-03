@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>devdeck</groupId>
-    <artifactId>card-game</artifactId>
+    <artifactId>dev-deck</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>

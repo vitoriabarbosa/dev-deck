@@ -1,60 +1,69 @@
 package devdeck.model;
 
-import devdeck.utils.ConfigCard;
-import devdeck.utils.RandomGenerator;
+import devdeck.utils.ConfigCarta;
+import devdeck.utils.GeradorAleatorio;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.Stack;
-import javax.swing.ImageIcon;
 
+/**
+ * Baralho de cartas, possui todas as 52 cartas e objeto de carta virada.
+ */
 public class Baralho {
-    private Stack<NoCarta> cards = new Stack<>();
+    public Stack<NoCarta> cartas = new Stack<NoCarta>();
 
+    public enum ENaipe {
+        COPAS, OURO, ESPADAS, PAUS
+    }
+    
+    public enum ECor {
+        VERMELHO, PRETO
+    }
+    
     final public static Naipe[] naipes = {
-            new Naipe(Naipe.EnumNaipe.JAVA),
-            new Naipe(Naipe.EnumNaipe.PYTHON),
-            new Naipe(Naipe.EnumNaipe.C),
-            new Naipe(Naipe.EnumNaipe.CPLUS)
+        new Naipe(ENaipe.COPAS, ECor.VERMELHO),
+        new Naipe(ENaipe.OURO, ECor.VERMELHO),
+        new Naipe(ENaipe.ESPADAS, ECor.PRETO),
+        new Naipe(ENaipe.PAUS, ECor.PRETO)
     };
-
-    // Carrega o ícone da carta fechada
+    
+    // Carrega o icone da carta fechada
     public final static ImageIcon cartaFechada = new ImageIcon(
-            new ImageIcon(ClassLoader.getSystemResource("cards/back.png"))
+            new ImageIcon(ClassLoader.getSystemResource("cartas/back.png"))
                     .getImage()
-                    .getScaledInstance(ConfigCard.LARGURA_CARTA, ConfigCard.ALTURA_CARTA, Image.SCALE_SMOOTH)
+                    .getScaledInstance(ConfigCarta.LARGURA_CARTA, ConfigCarta.ALTURA_CARTA, Image.SCALE_SMOOTH)
     );
 
     public Baralho() {
         // Cria as cartas
         int i = 0;
-        for(int numCarta = 0; numCarta < 13; numCarta++) {
-            for(Naipe naipe : Baralho.naipes) {
+        for (int numCarta = 0; numCarta < 13; numCarta++) {
+            for (Naipe naipe : Baralho.naipes) {
                 NoCarta nc = new NoCarta(numCarta + 1, naipe);
-                cards.push(nc);
+                cartas.push(nc);
                 i++;
             }
         }
-
-        // Embaralha
         this.embaralhar();
     }
-
+    
     public void embaralhar() {
-        RandomGenerator randomGenerator = new RandomGenerator();
-        for(int i = 0; i < 99; i++) {
-            int rand1 = randomGenerator.nextInt(cards.size());
-            int rand2 = randomGenerator.nextInt(cards.size());
-
-            NoCarta aux = cards.get(rand1);
-            cards.set(rand1, cards.get(rand2));
-            cards.set(rand2, aux);
+        GeradorAleatorio geradorAleatorio = new GeradorAleatorio();
+        for (int i = 0; i < 99999; i++) {
+            int rand1 = geradorAleatorio.nextInt(cartas.size());
+            int rand2 = geradorAleatorio.nextInt(cartas.size());
+            
+            NoCarta aux = cartas.get(rand1);
+            cartas.set(rand1, cartas.get(rand2));
+            cartas.set(rand2, aux);
         }
     }
-
+    
     public NoCarta retiraCartaTopo() {
-        if(cards.isEmpty())
+        if (cartas.isEmpty()) {
             return null;
-
-        return cards.pop();
+        }
+        return cartas.pop();
     }
 }

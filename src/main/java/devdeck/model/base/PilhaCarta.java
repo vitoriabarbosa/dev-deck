@@ -3,28 +3,20 @@ package devdeck.model.base;
 import devdeck.model.NoCarta;
 
 public class PilhaCarta {
-    private int topo = -1;
+    private int topo = - 1;
     protected NoCarta[] cartas;
-    private String nome = "";
-
+    private String nome;
+    
     public PilhaCarta(String nome) {
         this.nome = nome;
     }
 
     public boolean pilhaVazia() {
-        if (topo < 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return topo < 0;
     }
 
     public boolean pilhaCheia() {
-        if (topo < cartas.length - 1) {
-            return false;
-        } else {
-            return true;
-        }
+        return topo >= cartas.length - 1;
     }
 
     public NoCarta elementoTopo() {
@@ -50,14 +42,6 @@ public class PilhaCarta {
         } else {
             topo--;
             return cartas[topo + 1];
-        }
-    }
-
-    public void mostrar() {
-        int i = topo;
-        while (topo >= 0) {
-            System.out.println(i);
-            i--;
         }
     }
 

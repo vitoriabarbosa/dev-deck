@@ -1,17 +1,22 @@
 package devdeck.model;
 
+import devdeck.model.Baralho.ECor;
+import devdeck.model.Baralho.ENaipe;
+
 public class Naipe {
-    public enum EnumNaipe {
-        JAVA, PYTHON, C, CPLUS
-    }
-
-    private EnumNaipe naipe;
-
-    public Naipe(EnumNaipe naipe) {
+    private ENaipe naipe;
+    private ECor cor;
+    
+    public Naipe(ENaipe naipe, ECor cor) {
         this.naipe = naipe;
+        this.cor = cor;
     }
-
-    public EnumNaipe getNaipe() {
+    
+    public ENaipe getNaipe() {
         return this.naipe;
+    }
+    
+    public ECor getCor() {
+        return this.cor;
     }
 }
