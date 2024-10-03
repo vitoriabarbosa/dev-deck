@@ -1,61 +1,86 @@
 package devdeck.model.home;
 
+import devdeck.exceptions.MovimentosInvalidos;
 import devdeck.model.NoCarta;
-import devdeck.model.interfaces.Base;
-import devdeck.model.interfaces.Home;
-import devdeck.exceptions.InvalidMoves;
+import devdeck.model.base.Base;
 
 import java.util.ArrayList;
 import java.util.Stack;
 
+/**
+ * Classe de monte de cartas.
+ * Os montes possuem 3 cartas e são mostrados no topo esquerdo do jogo.
+ */
 public class MonteHome implements Home {
-    private ArrayList<Stack<NoCarta>> montes = new ArrayList<>();
-    private int numMonteAtivo = 0;
+    private ArrayList<Stack<NoCarta>> montes = new ArrayList<Stack<NoCarta>>();
 
     @Override
-    public boolean receberNo(NoCarta carta) throws InvalidMoves {
-        return false; // Ajuste necessário para lidar com a lógica de receber cartas
+    public void receberNo(NoCarta carta) throws MovimentosInvalidos {
     }
 
     @Override
-    public void remover(NoCarta nc) {
-        // Lógica para remover carta, se necessário
+    public void remover(NoCarta noCarta) {
+        int i = 0;
+        Stack<NoCarta> monteRemover = null;
+        for (Stack<NoCarta> monte : this.montes) {
+            if (monte.contains(noCarta)) {
+                monteRemover = monte;
+            }
+            i++;
+        }
+        
+        // Remove a carta do monte, se ele esvaziar, remove o monte do array original
+        if (monteRemover != null) {
+            monteRemover.remove(noCarta);
+            
+            if (!monteRemover.isEmpty()) {
+                NoCarta carta = monteRemover.get(monteRemover.size()-1);
+                carta.setOpen(true);
+            } else {
+                this.montes.remove(monteRemover);
+            }
+        }
     }
-
-    private Stack<NoCarta> monteAtual = null;
-
-    public void inserir(NoCarta nc) {
+    
+    Stack<NoCarta> monteAtual = null;
+    public void inserir(NoCarta noCarta) {
         if (monteAtual == null || monteAtual.size() == 3) {
-            monteAtual = new Stack<>();
+            monteAtual = new Stack<NoCarta>();
             this.montes.add(monteAtual);
         }
-        nc.setHome(this);
-        monteAtual.add(nc);
+        noCarta.setHome(this);
+        monteAtual.add(noCarta);
     }
-
+    
+    private int numMonteAtivo = 0;
     public Stack<NoCarta> retira3Cartas() {
-        if (this.montes.isEmpty()) return null;
-
-        Stack<NoCarta> cartas = this.montes.get(this.numMonteAtivo);
-        this.numMonteAtivo = (this.numMonteAtivo + 1) % this.montes.size(); // Garante que o monte ativo seja circular
-        return cartas;
+        if (this.montes.isEmpty()) {
+            return null;
+        }
+        
+        if (this.numMonteAtivo + 1 < this.montes.size()) {
+            this.numMonteAtivo++;
+        } else {
+            this.numMonteAtivo = 0;
+        }
+        return this.montes.get(this.numMonteAtivo);
     }
-
+    
     public int getNumMonteAtivo() {
         return this.numMonteAtivo;
     }
-
+    
     public ArrayList<Stack<NoCarta>> getMontes() {
         return this.montes;
     }
 
     @Override
     public Base getBase() {
-        return null; // Não aplicável aqui
+        return null;
     }
 
     @Override
     public void setBase(Base base) {
-        // Não aplicável aqui
+        return;
     }
 }

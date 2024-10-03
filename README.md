@@ -38,11 +38,11 @@ Software util:
 ### Instalação
 1. #### Clone o repositório
    ```bash
-   git clone https://github.com/vitoriabarbosa/<repositorio aqui>.git
+   git clone https://github.com/vitoriabarbosa/dev-deck.git
 
 2. #### Navegar até o Diretório do Projeto:
    ```bash
-   cd ~/<nome-projeto-aqui>
+   cd ~/dev-deck
 
 3. #### Instalar o JDK 17 ou Superior.
    - Verifique se você tem o JDK 17 ou superior instalado.

@@ -1,54 +1,60 @@
 package devdeck.model.home;
 
-import devdeck.model.interfaces.Base;
-import devdeck.model.interfaces.Home;
-import devdeck.model.base.PilhaCarta;
-import devdeck.exceptions.InvalidMoves;
+import devdeck.exceptions.MovimentosInvalidos;
 import devdeck.model.NoCarta;
-
-import java.util.Objects;
+import devdeck.model.base.Base;
+import devdeck.model.base.PilhaCarta;
 
 public class PilhaHome extends PilhaCarta implements Home {
-    public int x = 0;
-    public int y = 0;
     private Base base = null;
-
+    
     public PilhaHome(String nome) {
         super(nome);
-        this.cartas = new NoCarta[6];
+        this.cartas = new NoCarta[13];
     }
-
+    
     @Override
     public void setBase(Base base) {
         this.base = base;
     }
-
+    
     @Override
     public Base getBase() {
         return this.base;
     }
-
+    
+    /**
+     * Insere uma carta no topo da pilha de cartas.
+     * Só podemos inserir a carta se ela for um A (se a pilha for vazia)
+     * ou se ela for a proxima carta da sequencia.
+     *
+     * @param carta
+     */
     @Override
-    public boolean receberNo(NoCarta carta)
-            throws InvalidMoves
-    {
+    public void receberNo(NoCarta carta) throws MovimentosInvalidos {
         NoCarta cartaTopo = this.elementoTopo();
-        this.pilhaVazia();
-        if(!this.pilhaVazia() && Objects.equals(cartaTopo.getNumero(), carta.getNumero()) && Objects.equals(cartaTopo.getNaipe(), carta.getNaipe())
+
+        if ((this.pilhaVazia() && carta.getNumero() == 1)
+                || (!this.pilhaVazia() && cartaTopo.getNumero() == carta.getNumero() - 1
+                && cartaTopo.getNaipe() == carta.getNaipe())
         ) {
-            Home homeFrom = carta.getHome();
+            Home homeFrom = (Home) carta.getHome();
             homeFrom.remover(carta);
             carta.setHome(this);
-            return this.empilhar(carta);
+            this.empilhar(carta);
+            return;
         }
-
-        throw new InvalidMoves(InvalidMoves.PILHA_NO_SEQUENCIA_INVALIDA);
+        
+        throw new MovimentosInvalidos(MovimentosInvalidos.PILHA_NO_SEQUENCIA_INVALIDA);
     }
-
+    
+    /**
+     * Remove uma carta do topo do baralho (se disponível)
+     * 
+     * @return Retorna a ultima carta do baralho
+     */
     @Override
     public void remover(NoCarta nc) {
         this.desempilhar();
     }
-
-
 }
