@@ -7,20 +7,53 @@ import devdeck.utils.RecursoImagens;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A classe {@code NoCarta} representa uma carta individual com um número e um naipe.
+ * Ela pode ser exibida de forma aberta (frente) ou fechada (verso), e pode estar associada a um "home" como uma lista ou pilha.
+ */
 final public class NoCarta extends JLabel {
+
+    /**
+     * O número da carta (de 1 a 7).
+     */
     private int numero;
+
+    /**
+     * O ícone da carta quando está aberta (frente).
+     */
     private ImageIcon openedIcon;
+
+    /**
+     * O naipe da carta.
+     */
     private Naipe naipe;
 
+    /**
+     * A próxima carta conectada a esta (como uma pilha de cartas).
+     */
     private NoCarta prox = null;
+
+    /**
+     * Indica se a carta está aberta (frente visível).
+     */
     private boolean aberta = false;
+
+    /**
+     * Indica se a carta pode ser arrastada (draggable).
+     */
     private boolean draggable = false;
 
     /**
-     * Instancia da classe pai (home), pode ser uma ListaHome ua PilhaHome ou Baralho
+     * A instância de "home" que contém esta carta. Pode ser uma ListaHome, PilhaHome ou Baralho.
      */
     private Home home = null;
-    
+
+    /**
+     * Construtor que cria uma nova carta com um número e um naipe.
+     *
+     * @param numero O número da carta.
+     * @param naipe O naipe da carta.
+     */
     public NoCarta(int numero, Naipe naipe) {
         this.numero = numero;
         this.naipe = naipe;
@@ -28,7 +61,12 @@ final public class NoCarta extends JLabel {
         this.openedIcon = RecursoImagens.getCarta(this.getNumRep().toLowerCase() + "-" + this.getNaipeRep() + ".png");
         this.setOpen(false);
     }
-    
+
+    /**
+     * Conta o número de cartas ligadas a esta carta (cartas "próximas").
+     *
+     * @return O número de cartas conectadas a esta.
+     */
     public int getCountProx() {
         int totalProx = 0;
         NoCarta aux = this;
@@ -38,31 +76,67 @@ final public class NoCarta extends JLabel {
         }
         return totalProx;
     }
-    
+
+    /**
+     * Obtém a próxima carta conectada.
+     *
+     * @return A próxima carta ou {@code null} se não houver.
+     */
     public NoCarta getProx() {
         return this.prox;
     }
 
+    /**
+     * Define a próxima carta conectada.
+     *
+     * @param prox A próxima carta.
+     */
     public void setProx(NoCarta prox) {
         this.prox = prox;
     }
 
+    /**
+     * Verifica se a carta está aberta.
+     *
+     * @return {@code true} se a carta estiver aberta; caso contrário, {@code false}.
+     */
     public boolean isOpen() {
         return this.aberta;
     }
-    
+
+    /**
+     * Verifica se a carta é arrastável (draggable).
+     *
+     * @return {@code true} se a carta for arrastável; caso contrário, {@code false}.
+     */
     public boolean isDraggable() {
         return this.draggable;
     }
-    
+
+    /**
+     * Define se a carta deve ser exibida aberta (frente) ou fechada (verso).
+     *
+     * @param open Se a carta deve estar aberta.
+     */
     public void setOpen(boolean open) {
         this.setOpen(open, true);
     }
-    
+
+    /**
+     * Define se a carta pode ser arrastada.
+     *
+     * @param draggable Se a carta é arrastável.
+     */
     public void setDraggable(boolean draggable) {
         this.draggable = draggable;
     }
-    
+
+    /**
+     * Define se a carta está aberta e se pode ser arrastada.
+     *
+     * @param open Se a carta deve estar aberta.
+     * @param draggable Se a carta deve ser arrastável.
+     */
     public void setOpen(boolean open, boolean draggable) {
         if (open) {
             this.setIcon(this.openedIcon);
@@ -71,19 +145,25 @@ final public class NoCarta extends JLabel {
             this.setIcon(Baralho.cartaFechada);
             this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
-        
+
         this.aberta = open;
         this.setDraggable(draggable);
     }
 
+    /**
+     * Obtém o número da carta.
+     *
+     * @return O número da carta.
+     */
     public int getNumero() {
         return this.numero;
     }
-    
+
     /**
-     * Recupera a representação do número da carta, por ex:
-     * Ao invés de 13, 12, 11, 1 será retornado K, Q, J, A
-     * @return String
+     * Retorna a representação textual do número da carta.
+     * Para números especiais como 1, 7, retorna "A" e "K", respectivamente.
+     *
+     * @return A representação do número da carta.
      */
     public String getNumRep() {
         String ret;
@@ -96,34 +176,44 @@ final public class NoCarta extends JLabel {
         }
         return ret;
     }
-    
+
+    /**
+     * Retorna a representação textual do naipe da carta.
+     *
+     * @return A representação do naipe da carta.
+     */
     public String getNaipeRep() {
-        String ret = switch (this.naipe.getNaipe()) {
+        return switch (this.naipe.getNaipe()) {
             case JAVA -> "java";
             case C -> "c";
             case PYTHON -> "python";
             default -> "c++";
         };
-        return ret;
     }
 
+    /**
+     * Obtém o naipe da carta.
+     *
+     * @return O naipe da carta.
+     */
     public Naipe getNaipe() {
         return this.naipe;
     }
-    
+
     /**
-     * Mostra uma representação do objeto da carta no padrão: "A de COPAS"
-     * @return String
+     * Retorna uma representação textual da carta no formato "A de JAVA".
+     *
+     * @return A representação textual da carta.
      */
     @Override
     public String toString() {
         return this.getNumRep() + " de " + this.getNaipe().getNaipe().name();
     }
-    
+
     /**
-     * Seta a home da carta (e também de todos as cartas filhas).
-     * Pode ser uma ListaHome, PilhaHome ou Baralho
-     * @param home 
+     * Define a "home" da carta (e das cartas conectadas), que pode ser uma ListaHome, PilhaHome ou Baralho.
+     *
+     * @param home A instância de "home" associada à carta.
      */
     public void setHome(Home home) {
         this.home = home;
@@ -131,6 +221,12 @@ final public class NoCarta extends JLabel {
             this.getProx().setHome(home);
         }
     }
+
+    /**
+     * Obtém a instância de "home" associada à carta.
+     *
+     * @return O "home" da carta.
+     */
     public Home getHome() {
         return this.home;
     }

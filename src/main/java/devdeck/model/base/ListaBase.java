@@ -7,11 +7,25 @@ import devdeck.utils.RecursoImagens;
 import java.awt.*;
 
 /**
- * Elemento base da lista (primeiro buraco da lista, normalmente terá uma carta sobre ele)
+ * A classe {@code ListaBase} representa um elemento base da lista, que
+ * normalmente terá uma carta sobre ele. Este elemento é utilizado para
+ * gerenciar a posição onde cartas podem ser empilhadas na lista de cartas.
  */
 public class ListaBase extends Base {
+
+    /**
+     * A lista de cartas associada a este elemento base.
+     */
     public ListaHome home = null;
-    
+
+    /**
+     * Construtor que cria uma nova instância de {@code ListaBase}
+     * na posição especificada (x, y).
+     *
+     * @param x A coordenada x da posição.
+     * @param y A coordenada y da posição.
+     * @param home A lista de cartas associada a este elemento base.
+     */
     public ListaBase(int x, int y, ListaHome home) {
         this.x = x;
         this.y = y;
@@ -20,10 +34,12 @@ public class ListaBase extends Base {
         this.setLocation(this.x, this.y);
         this.home = home;
     }
-    
+
     /**
-     * Retorna a próxima posição disponível para uma carta (em x,y)
-     * @return Point
+     * Retorna a próxima posição disponível para uma carta em coordenadas (x, y).
+     *
+     * @return Um objeto {@code Point} representando a próxima posição
+     *         disponível para uma carta.
      */
     @Override
     public Point getNextCardPoint() {
@@ -33,7 +49,12 @@ public class ListaBase extends Base {
         }
         return new Point(this.getBaseX(), nextY);
     }
-    
+
+    /**
+     * Retorna a lista de cartas associada a este elemento base.
+     *
+     * @return A lista de cartas associada.
+     */
     @Override
     public ListaHome getHome() {
         return this.home;

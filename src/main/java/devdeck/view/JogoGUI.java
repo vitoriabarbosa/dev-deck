@@ -20,6 +20,11 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Stack;
 
+/**
+ * A classe JogoGUI representa a interface gráfica de um jogo de paciência.
+ * Esta classe é responsável por gerenciar a exibição e as interações com os
+ * componentes visuais do jogo, como cartas, montes, bases e listas.
+ */
 public class JogoGUI extends JFrame {
     private final JogoApp JOGO;
     private JLayeredPane layeredPane;
@@ -30,7 +35,11 @@ public class JogoGUI extends JFrame {
     public static JLabel warningBg;
     public static JLabel warningBox;
 
-    /** Creates new form PacienciaUI */
+    /**
+     * Cria uma nova instância da interface gráfica do jogo.
+     *
+     * @param JOGO A instância do aplicativo do jogo.
+     */
     public JogoGUI(JogoApp JOGO) {
         ArrayList<Image> icons = new ArrayList<Image>();
         this.setIconImages(icons);
@@ -44,14 +53,20 @@ public class JogoGUI extends JFrame {
         this.iniciaJogo();
     }
 
+    /**
+     * Inicializa os componentes do jogo, incluindo o baralho, as bases e as listas.
+     */
     private void iniciaJogo() {
         this.iniciaBaralho();
         this.iniciaBases();
         this.iniciaListas();
     }
 
+    /**
+     * Inicializa o baralho de cartas na interface.
+     * Configura a posição e eventos associados às cartas do monte.
+     */
     public void iniciaBaralho() {
-        // Ajusta a posição do monte de cartas com padding
         int barX = PADDING;
         int barY = PADDING;
 
@@ -82,6 +97,10 @@ public class JogoGUI extends JFrame {
         layeredPane.add(cartaHolder, Integer.valueOf(2));
     }
 
+    /**
+     * Inicializa a caixa de aviso que exibe mensagens ao usuário.
+     * A caixa de aviso pode ser clicada para ocultá-la.
+     */
     private void iniciaWarningBox() {
         warningBg = new JLabel(RecursoImagens.getUi("caixa.png", 300, 100));
         warningBg.setBounds(0, 0, 300, 100);
@@ -117,12 +136,20 @@ public class JogoGUI extends JFrame {
         });
     }
 
+    /**
+     * Exibe uma mensagem de aviso na caixa de aviso.
+     *
+     * @param texto O texto da mensagem de aviso.
+     */
     public static void showWarning(String texto) {
         warningBg.setVisible(true);
         warningBox.setVisible(true);
         warningBox.setText(texto);
     }
 
+    /**
+     * Oculta a caixa de aviso.
+     */
     public static void hideWarning() {
         warningBg.setVisible(false);
         warningBox.setVisible(false);
@@ -130,8 +157,9 @@ public class JogoGUI extends JFrame {
 
     private Stack<NoCarta> ult3Cartas = null;
     private boolean showingHolder = false;
+
     /**
-     * Abre 3 cartas do baralho
+     * Exibe as três próximas cartas do monte na interface.
      */
     public void abre3Cartas() {
         MonteHome monteHome = this.JOGO.getMonteHome();
@@ -152,7 +180,6 @@ public class JogoGUI extends JFrame {
                 this.hideHolder();
             }
 
-            // Lógica para habilitar as novas 3 cartas, se houver
             int baralhoX = ConfigCarta.DESLOCAMENTO_X + PADDING;
             int baralhoY = PADDING;
             ult3Cartas = monteHome.retira3Cartas();
@@ -161,21 +188,20 @@ public class JogoGUI extends JFrame {
                 for (int i = 0; i < numCartas; i++) {
                     NoCarta carta = ult3Cartas.get(i);
                     carta.setOpen(true);
-                    carta.setVisible(true); // Garante que a carta esteja visível
+                    carta.setVisible(true);
                     carta.setLocation(baralhoX + (i * 40), baralhoY);
                     carta.setSize(ConfigCarta.LARGURA, ConfigCarta.ALTURA);
-
-                    // Habilita o arrastável apenas para a última carta ou para Áses
                     carta.setDraggable(i == numCartas - 1);
-
-                    // Adiciona a carta em uma camada superior
                     carta.addMouseListener(new CartaEvento(this, this.JOGO));
-                    layeredPane.add(carta, Integer.valueOf(2 + i)); // Camada 3 ou mais alto para evitar sobreposição
+                    layeredPane.add(carta, Integer.valueOf(2 + i));
                 }
             }
         }
     }
 
+    /**
+     * Mostra o espaço "vazio" para o monte quando todas as cartas foram usadas.
+     */
     private void showHolder() {
         for (JLabel label : this.visualCartasMonte) {
             label.setVisible(false);
@@ -184,6 +210,9 @@ public class JogoGUI extends JFrame {
         this.showingHolder = true;
     }
 
+    /**
+     * Oculta o espaço "vazio" do monte e exibe as cartas do monte.
+     */
     private void hideHolder() {
         for (JLabel label : this.visualCartasMonte) {
             label.setVisible(true);
@@ -193,7 +222,7 @@ public class JogoGUI extends JFrame {
     }
 
     /**
-     * Inicia a interface das pilhas de base
+     * Inicializa as pilhas de bases na interface.
      */
     private void iniciaBases() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -205,17 +234,20 @@ public class JogoGUI extends JFrame {
             PilhaBase pilhaBase = new PilhaBase(baseX, baseY, pilha);
             pilha.setBase(pilhaBase);
             pilhaBase.setSize(ConfigCarta.LARGURA, ConfigCarta.ALTURA);
-            layeredPane.add(pilhaBase, Integer.valueOf(1)); // Camada 1
+            layeredPane.add(pilhaBase, Integer.valueOf(1));
 
             baseX -= (ConfigCarta.LARGURA + PADDING);
         }
     }
 
+    /**
+     * Inicializa as listas de cartas na interface.
+     */
     private void iniciaListas() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         int numListas = this.JOGO.getLISTAS().length;
-        int totalListaWidth = ConfigCarta.LARGURA * numListas + (ConfigCarta.DESLOCAMENTO_X / 2) * (numListas - 1); // Espaço total ocupado pelas listas
+        int totalListaWidth = ConfigCarta.LARGURA * numListas + (ConfigCarta.DESLOCAMENTO_X / 2) * (numListas - 1);
 
         int cartaX = (screenSize.width - totalListaWidth) / 2;
         int cartaY = screenSize.height / 3 + PADDING;
@@ -224,7 +256,7 @@ public class JogoGUI extends JFrame {
             ListaBase listaBase = new ListaBase(cartaX, cartaY, lista);
             lista.setBase(listaBase);
             listaBase.setSize(ConfigCarta.LARGURA, ConfigCarta.ALTURA);
-            layeredPane.add(listaBase, Integer.valueOf(1)); // Camada 1
+            layeredPane.add(listaBase, Integer.valueOf(1));
 
             // Adiciona as cartas da lista
             for (int j = 0; j < lista.contarNos(); j++) {
@@ -233,7 +265,7 @@ public class JogoGUI extends JFrame {
                     carta.setLocation(cartaX, cartaY);
                     carta.setSize(ConfigCarta.LARGURA, ConfigCarta.ALTURA);
                     carta.addMouseListener(new CartaEvento(this, this.JOGO));
-                    layeredPane.add(carta, Integer.valueOf(2 + j)); // Camadas superiores
+                    layeredPane.add(carta, Integer.valueOf(2 + j));
                     cartaY += ConfigCarta.DESLOCAMENTO_Y;
                 }
             }
@@ -243,6 +275,10 @@ public class JogoGUI extends JFrame {
         }
     }
 
+    /**
+     * Inicializa os componentes principais da interface, como o background e a área
+     * de layout.
+     */
     private void initComponents() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Paciência - DevDeck");
@@ -252,20 +288,22 @@ public class JogoGUI extends JFrame {
         layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(screenSize);
         setContentPane(layeredPane);
-        layeredPane.setLayout(null); // Posicionamento absoluto
+        layeredPane.setLayout(null);
 
         // Adiciona o background na camada mais baixa usando o painel customizado
         Image imagemFundo = RecursoImagens.getBackground("tela-fundo.png", screenSize).getImage();
         FundoPainel backgroundPanel = new FundoPainel(imagemFundo);
         backgroundPanel.setBounds(0, 0, screenSize.width, screenSize.height);
-        layeredPane.add(backgroundPanel, Integer.valueOf(0)); // Camada 0
+        layeredPane.add(backgroundPanel, Integer.valueOf(0));
 
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setResizable(false);
     }
 
     /**
-     * @param args the command line arguments
+     * O método principal que inicializa e exibe a interface do jogo.
+     *
+     * @param args Argumentos da linha de comando.
      */
     public static void main(String args[]) {
         try {

@@ -16,6 +16,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+/**
+ * A classe {@code CartaEvento} gerencia os eventos de mouse relacionados
+ * às cartas no jogo. Ela implementa as interfaces {@link MouseListener}
+ * e {@link MouseMotionListener} para permitir interações de arrastar
+ * e soltar das cartas.
+ */
 public class CartaEvento extends JFrame implements MouseListener, MouseMotionListener {
     private NoCarta carta;
     private final Container PAINEL;
@@ -24,11 +30,17 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
     private Point cartaOriginalLocation;
     private Point primeiroClique = new Point();
 
+    /**
+     * Constrói uma nova instância de {@code CartaEvento}.
+     *
+     * @param frame o frame onde os eventos ocorrerão
+     * @param JOGO  a instância do jogo associada a este evento
+     */
     public CartaEvento(JFrame frame, JogoApp JOGO) {
         this.JOGO = JOGO;
         this.PAINEL = frame.getContentPane();
     }
-    
+
     @Override
     public void mouseClicked(MouseEvent me) {
         // Se houver um duplo clique em alguma carta, tenta inserir o nó na base onde conseguir
@@ -63,7 +75,7 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
         if (!carta.isDraggable()) {
             return;
         }
-        
+
         carta.removeMouseMotionListener(this);
         try {
             Home homeTo = this.findHomeAt(me);
@@ -77,7 +89,7 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
                 // Por fim, coloca as cartas no lugar
                 this.setNoCartaLocation(carta, nextCardPoint);
                 JogoGUI.hideWarning();
-                
+
                 if (homeTo instanceof PilhaHome) {
                     this.JOGO.verificaFimDeJogo();
                 }
@@ -86,17 +98,18 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
             }
         } catch (MovimentosInvalidos ex) {
             this.setNoCartaLocation(carta, cartaOriginalLocation);
-            
+
             if (ex.getCode() != MovimentosInvalidos.GENERICO) {
                 JogoGUI.showWarning("<html>" + ex.getMessage());
             }
         }
     }
-    
+
     /**
-     * Move um nó completo para alguma posição
-     * @param nc 
-     * @param ponto Ponto para aonde a carta deve ser levada
+     * Move um nó completo para uma posição específica.
+     *
+     * @param nc    o nó da carta a ser movido
+     * @param ponto o ponto para onde a carta deve ser movida
      */
     private void setNoCartaLocation(NoCarta nc, Point ponto) {
         this.carta = nc;
@@ -109,37 +122,39 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
         while (aux != null) {
             aux.setLocation(locationX, locationY);
             this.PAINEL.setComponentZOrder(aux, totalProx - i);
-            
+
             locationY += ConfigCarta.DESLOCAMENTO_Y;
             aux = aux.getProx();
             i++;
         }
     }
 
-    private Home findHomeAt(MouseEvent me)
-        throws MovimentosInvalidos
-    {
-
-    // Recupera o ponto do evento do mouse.
-    // Como o componente neste local vai ser a própria carta,desabilita a carta e pega o elemento de trás depois reabilita a carta de volta
-
+    /**
+     * Encontra a área "Home" que está sob o cursor do mouse.
+     *
+     * @param me o evento do mouse
+     * @return o componente "Home" onde a carta pode ser colocada
+     * @throws MovimentosInvalidos se não for possível determinar a área "Home"
+     */
+    private Home findHomeAt(MouseEvent me) throws MovimentosInvalidos {
+        // Recupera o ponto do evento do mouse.
+        // Como o componente neste local vai ser a própria carta, desabilita a carta e pega o elemento de trás depois reabilita a carta de volta
         try {
             Point ponto = SwingUtilities.convertPoint(me.getComponent(), me.getPoint(), this.PAINEL);
             me.getComponent().setVisible(false);
             Component componente = this.PAINEL.findComponentAt(ponto);
             me.getComponent().setVisible(true);
-            
+
             if (componente != null) {
                 if (componente instanceof NoCarta nc) {
                     return nc.getHome();
-                } else
-                if (componente instanceof Base base) {
+                } else if (componente instanceof Base base) {
                     return base.getHome();
                 }
-                
+
                 throw new MovimentosInvalidos(MovimentosInvalidos.GENERICO);
             }
-            
+
         } catch(ClassCastException e) {
             throw new MovimentosInvalidos(MovimentosInvalidos.GENERICO);
         }
@@ -157,10 +172,10 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
         if (!carta.isDraggable()) {
             return;
         }
-        
+
         Point ponto1 = SwingUtilities.convertPoint(me.getComponent(), me.getPoint(), this.PAINEL);
         Point ponto = new Point(ponto1.x - primeiroClique.x, ponto1.y - primeiroClique.y);
-        
+
         this.setNoCartaLocation(carta, ponto);
     }
 

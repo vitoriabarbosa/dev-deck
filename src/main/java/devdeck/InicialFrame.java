@@ -12,6 +12,12 @@ import java.awt.*;
  * Esta tela é exibida por um curto período antes de redirecionar para a tela do jogo.
  */
 public class InicialFrame extends JFrame {
+
+    /**
+     * Construtor da classe {@code InicialFrame}.
+     * Configura a tela inicial, define seu tamanho, título e o fundo da tela.
+     * O fundo é carregado a partir de um recurso de imagem.
+     */
     public InicialFrame() {
         setSize(1300, 800);
         setLocationRelativeTo(null);
@@ -29,8 +35,8 @@ public class InicialFrame extends JFrame {
 
     /**
      * Método principal para iniciar a aplicação.
-     * Cria uma instância da InitialFrame (tela inicial), exibe uma splash screen por 10 segundos
-     * e depois abre a tela de jogo.
+     * Cria uma instância da {@code InicialFrame} (tela inicial), exibe uma splash screen por 10 segundos
+     * e depois abre a tela do jogo.
      *
      * @param args Argumentos da linha de comando (não utilizados neste contexto).
      */
