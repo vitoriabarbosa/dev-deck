@@ -10,7 +10,7 @@ public class PilhaHome extends PilhaCarta implements Home {
     
     public PilhaHome(String nome) {
         super(nome);
-        this.cartas = new NoCarta[13];
+        this.cartas = new NoCarta[7];
     }
     
     @Override

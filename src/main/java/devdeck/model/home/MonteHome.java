@@ -15,8 +15,7 @@ public class MonteHome implements Home {
     private ArrayList<Stack<NoCarta>> montes = new ArrayList<Stack<NoCarta>>();
 
     @Override
-    public void receberNo(NoCarta carta) throws MovimentosInvalidos {
-    }
+    public void receberNo(NoCarta carta) throws MovimentosInvalidos {}
 
     @Override
     public void remover(NoCarta noCarta) {

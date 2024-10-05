@@ -36,26 +36,29 @@ public class ListaHome extends ListaCarta implements Home {
      * @param noCarta
      */
     public void inserir(NoCarta noCarta) {
-        NoCarta antigoFinal = this.elementoFinal();
-        this.inserirFinal(noCarta);
-        
-        // Vira as cartas (fecha a penultima, abre a ultima)
-        if (antigoFinal != null) {
-            antigoFinal.setOpen(false);
-        }
+        if (noCarta != null) {
+            NoCarta antigoFinal = this.elementoFinal();
+            this.inserirFinal(noCarta);
 
-        this.elementoFinal().setOpen(true);
+            if (antigoFinal != null) {
+                antigoFinal.setOpen(false);
+            }
+
+            this.elementoFinal().setOpen(true);
+            noCarta.setHome(this);
+        } else {
+            System.err.println("Error: tentativa de inserir um NoCarta null em ListaHome.");
+        }
     }
-    
+
+
     /**
      * Recebe um nó, valida e armazena na lista atual
      *
      * @param carta No (sublista) de cartas a serem inseridas na lista.
      */
     @Override
-    public void receberNo(NoCarta carta)
-        throws MovimentosInvalidos
-    {
+    public void receberNo(NoCarta carta) throws MovimentosInvalidos {
         if (carta == null || !carta.isOpen()) {
             throw new MovimentosInvalidos(MovimentosInvalidos.LISTA_NO_FECHADO);
         }
@@ -64,7 +67,6 @@ public class ListaHome extends ListaCarta implements Home {
         if (!validaConjuntoNo(carta)) {
             throw new MovimentosInvalidos(MovimentosInvalidos.LISTA_NO_INVALIDO);
         }
-        
 
         // Verifica se a carta do topo da sequencia encaixa com a do topo da lista que queremos inserir.
         if (!this.listaVazia() && !JogoApp.cartaSequenciaValida(this.elementoFinal(), carta)) {
@@ -72,7 +74,7 @@ public class ListaHome extends ListaCarta implements Home {
         }
         
         // Se for uma sublista indo para uma lista vazia, o topo deve ser obrigatoriamente um rei
-        if (this.listaVazia() && carta.getNumero() != 13) {
+        if (this.listaVazia() && carta.getNumero() != 7) {
             throw new MovimentosInvalidos(MovimentosInvalidos.LISTA_VAZIA_APENAS_REIS);
         }
         
@@ -81,7 +83,6 @@ public class ListaHome extends ListaCarta implements Home {
         listaFrom.remover(carta);
         this.inserirFinal(carta);
         carta.setHome(this);
-
     }
     
     /**
@@ -104,8 +105,8 @@ public class ListaHome extends ListaCarta implements Home {
     }
     
     @Override
-    public void remover(NoCarta noCarta) {
-        super.remover(noCarta);
+    public void remover(NoCarta nc) {
+        super.remover(nc);
         
         // Abre a ultima carta da lista
         if (!this.listaVazia()) {

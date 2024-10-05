@@ -2,7 +2,7 @@ package devdeck.model;
 
 import devdeck.model.home.Home;
 import devdeck.utils.ConfigCarta;
-import devdeck.utils.RecursosUteis;
+import devdeck.utils.RecursoImagens;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,8 +24,8 @@ final public class NoCarta extends JLabel {
     public NoCarta(int numero, Naipe naipe) {
         this.numero = numero;
         this.naipe = naipe;
-        this.setBounds(0, 0, ConfigCarta.LARGURA_CARTA, ConfigCarta.ALTURA_CARTA);
-        this.openedIcon = RecursosUteis.getCarta(this.getNumRep().toLowerCase() + "-" + this.getNaipeRep() + ".png");
+        this.setBounds(0, 0, ConfigCarta.LARGURA, ConfigCarta.ALTURA);
+        this.openedIcon = RecursoImagens.getCarta(this.getNumRep().toLowerCase() + "-" + this.getNaipeRep() + ".png");
         this.setOpen(false);
     }
     
@@ -42,11 +42,11 @@ final public class NoCarta extends JLabel {
     public NoCarta getProx() {
         return this.prox;
     }
-    
+
     public void setProx(NoCarta prox) {
         this.prox = prox;
     }
-    
+
     public boolean isOpen() {
         return this.aberta;
     }
@@ -75,7 +75,7 @@ final public class NoCarta extends JLabel {
         this.aberta = open;
         this.setDraggable(draggable);
     }
-    
+
     public int getNumero() {
         return this.numero;
     }
@@ -86,22 +86,23 @@ final public class NoCarta extends JLabel {
      * @return String
      */
     public String getNumRep() {
-        String ret = switch (this.numero) {
-            case 1 -> "A";
-            case 11 -> "J";
-            case 12 -> "Q";
-            case 13 -> "K";
-            default -> String.valueOf(this.numero);
-        };
+        String ret;
+        if (this.numero == 1) {
+            ret = "A";
+        } else if (this.numero == 7) {
+            ret = "K";
+        } else {
+            ret = String.valueOf(this.numero);
+        }
         return ret;
     }
     
     public String getNaipeRep() {
         String ret = switch (this.naipe.getNaipe()) {
-            case COPAS -> "c";
-            case ESPADAS -> "e";
-            case OURO -> "o";
-            default -> "p";
+            case JAVA -> "java";
+            case C -> "c";
+            case PYTHON -> "python";
+            default -> "c++";
         };
         return ret;
     }
@@ -126,12 +127,10 @@ final public class NoCarta extends JLabel {
      */
     public void setHome(Home home) {
         this.home = home;
-        
         if (this.getProx() != null) {
             this.getProx().setHome(home);
         }
     }
-    
     public Home getHome() {
         return this.home;
     }

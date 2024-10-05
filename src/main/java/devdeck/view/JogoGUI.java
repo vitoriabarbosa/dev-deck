@@ -6,10 +6,12 @@ import devdeck.model.base.PilhaBase;
 import devdeck.model.home.ListaHome;
 import devdeck.model.home.MonteHome;
 import devdeck.model.home.PilhaHome;
-import devdeck.utils.CartaMouseListener;
 import devdeck.utils.ConfigCarta;
-import devdeck.utils.MonteMouseListener;
-import devdeck.utils.RecursosUteis;
+import devdeck.utils.component.FundoPainel;
+import devdeck.utils.component.JogoPainel;
+import devdeck.utils.event.CartaEvento;
+import devdeck.utils.event.MonteEvento;
+import devdeck.utils.RecursoImagens;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,17 +19,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class JogoGUI extends JFrame {
+    private final JogoApp JOGO;
+    private JLayeredPane layeredPane;
+    private static final int PADDING = 100;
+
     public JLabel cartaHolder;
     public JLabel[] visualCartasMonte = new JLabel[3];
-
-    private final JogoApp JOGO;
-    public final static int DESLOCAMENTO_CARTA_Y = 40;
-    public final static int DESLOCAMENTO_CARTA_X = 180;
-
     public static JLabel warningBg;
     public static JLabel warningBox;
 
@@ -36,10 +35,9 @@ public class JogoGUI extends JFrame {
         ArrayList<Image> icons = new ArrayList<Image>();
         this.setIconImages(icons);
 
+        // Inicializa o painel principal
         this.setContentPane(new JogoPainel());
         initComponents();
-        this.getContentPane().setBackground(new Color(9, 87, 37));
-        this.setLocationRelativeTo(null);
         this.iniciaWarningBox();
 
         this.JOGO = JOGO;
@@ -53,62 +51,50 @@ public class JogoGUI extends JFrame {
     }
 
     public void iniciaBaralho() {
-        // Adiciona a cartinha clicável para pegar outras cartas
-        int barX = 40;
-        int barY = 22;
-        for (int i=0; i < 3; i++) {
-            JLabel carta = new JLabel(RecursosUteis.getCarta("back.png"));
+        // Ajusta a posição do monte de cartas com padding
+        int barX = PADDING;
+        int barY = PADDING;
+
+        for (int i = 0; i < 3; i++) {
+            JLabel carta = new JLabel(RecursoImagens.getCarta("fundo.png"));
             visualCartasMonte[i] = carta;
 
-            carta.setBounds(0, 0, ConfigCarta.LARGURA_CARTA, ConfigCarta.ALTURA_CARTA);
+            carta.setBounds(0, 0, ConfigCarta.LARGURA, ConfigCarta.ALTURA);
             carta.setLocation(barX, barY);
-            this.getContentPane().add(carta);
-            this.getContentPane().setComponentZOrder(carta, 0);
+            layeredPane.add(carta, JLayeredPane.PALETTE_LAYER);
+            layeredPane.setComponentZOrder(carta, 0);
 
             barX += 2;
             barY += 2;
 
             if (i == 2) {
                 carta.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                carta.addMouseListener(new MonteMouseListener(this));
-            }
-        }
-
-        // Adiciona as cartas do monte no pane, invisiveis.
-        MonteHome monteHome = this.JOGO.getMonteHome();
-        for (int i = 0; i < 8; i++) {
-            Stack<NoCarta> monte = monteHome.retira3Cartas();
-            for (NoCarta carta : monte) {
-                this.getContentPane().add(carta);
-                carta.addMouseListener(new CartaMouseListener(this, this.JOGO));
-                this.getContentPane().setComponentZOrder(carta, 0);
-                carta.setVisible(false);
+                carta.addMouseListener(new MonteEvento(this));
             }
         }
 
         // Adiciona a carta "vazia"
-        cartaHolder = new JLabel(RecursosUteis.getCarta("empty_card.png"));
-        cartaHolder.setBounds(0, 0, ConfigCarta.LARGURA_CARTA, ConfigCarta.ALTURA_CARTA);
-        cartaHolder.setLocation(40, 22);
-        cartaHolder.addMouseListener(new MonteMouseListener(this));
+        cartaHolder = new JLabel(RecursoImagens.getCarta("carta-vazia.png"));
+        cartaHolder.setBounds(0, 0, ConfigCarta.LARGURA, ConfigCarta.ALTURA);
+        cartaHolder.setLocation(PADDING, PADDING);
+        cartaHolder.addMouseListener(new MonteEvento(this));
         cartaHolder.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        this.getContentPane().add(cartaHolder);
-        this.getContentPane().setComponentZOrder(cartaHolder, this.getContentPane().getComponentCount() - 1);
+        layeredPane.add(cartaHolder, Integer.valueOf(2));
     }
 
     private void iniciaWarningBox() {
-        warningBg = new JLabel(RecursosUteis.getUi("caixa.png"));
-        warningBg.setBounds(0, 0, 206, 106);
-        warningBg.setLocation(40, 800);
+        warningBg = new JLabel(RecursoImagens.getUi("caixa.png", 300, 100));
+        warningBg.setBounds(0, 0, 300, 100);
+        warningBg.setLocation(PADDING, PADDING * 8);
 
         warningBox = new JLabel();
         warningBox.setForeground(Color.black);
-        warningBox.setBounds(8, 26, JogoGUI.warningBg.getWidth(), JogoGUI.warningBg.getHeight());
+        warningBox.setBounds(15, 25, warningBg.getWidth(), warningBg.getHeight());
         warningBox.setHorizontalAlignment(JLabel.LEFT);
         warningBox.setVerticalAlignment(JLabel.TOP);
         warningBg.add(warningBox);
 
-        this.getContentPane().add(warningBg);
+        layeredPane.add(warningBg, Integer.valueOf(2));
         hideWarning();
 
         warningBox.addMouseListener(new MouseListener() {
@@ -150,10 +136,10 @@ public class JogoGUI extends JFrame {
     public void abre3Cartas() {
         MonteHome monteHome = this.JOGO.getMonteHome();
 
-        // Esconde as 3 cartas anteriores
+        // Esconde as 3 cartas anteriores e remove-as do painel
         if (ult3Cartas != null) {
             for (NoCarta carta : ult3Cartas) {
-                carta.setVisible(false);
+                carta.setVisible(false); // Esconde a carta, mas não remove
             }
         }
 
@@ -166,22 +152,25 @@ public class JogoGUI extends JFrame {
                 this.hideHolder();
             }
 
-            // Habilita novas 3 cartas
-            int baralhoX = DESLOCAMENTO_CARTA_X + 80;
-            int baralhoY = 22;
+            // Lógica para habilitar as novas 3 cartas, se houver
+            int baralhoX = ConfigCarta.DESLOCAMENTO_X + PADDING;
+            int baralhoY = PADDING;
             ult3Cartas = monteHome.retira3Cartas();
             if (ult3Cartas != null) {
-                int i = 1;
-                for (NoCarta carta : ult3Cartas) {
+                int numCartas = ult3Cartas.size();
+                for (int i = 0; i < numCartas; i++) {
+                    NoCarta carta = ult3Cartas.get(i);
                     carta.setOpen(true);
-                    carta.setVisible(true);
-                    carta.setLocation(baralhoX, baralhoY);
-                    this.getContentPane().setComponentZOrder(carta, ult3Cartas.size()-i);
+                    carta.setVisible(true); // Garante que a carta esteja visível
+                    carta.setLocation(baralhoX + (i * 40), baralhoY);
+                    carta.setSize(ConfigCarta.LARGURA, ConfigCarta.ALTURA);
 
-                    carta.setDraggable(i == ult3Cartas.size());
+                    // Habilita o arrastável apenas para a última carta ou para Áses
+                    carta.setDraggable(i == numCartas - 1);
 
-                    i++;
-                    baralhoX += 40;
+                    // Adiciona a carta em uma camada superior
+                    carta.addMouseListener(new CartaEvento(this, this.JOGO));
+                    layeredPane.add(carta, Integer.valueOf(2 + i)); // Camada 3 ou mais alto para evitar sobreposição
                 }
             }
         }
@@ -191,7 +180,6 @@ public class JogoGUI extends JFrame {
         for (JLabel label : this.visualCartasMonte) {
             label.setVisible(false);
         }
-
         this.cartaHolder.setVisible(true);
         this.showingHolder = true;
     }
@@ -200,7 +188,6 @@ public class JogoGUI extends JFrame {
         for (JLabel label : this.visualCartasMonte) {
             label.setVisible(true);
         }
-
         this.cartaHolder.setVisible(false);
         this.showingHolder = false;
     }
@@ -209,60 +196,72 @@ public class JogoGUI extends JFrame {
      * Inicia a interface das pilhas de base
      */
     private void iniciaBases() {
-        int baseX = 900;
-        int baseY = 22;
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+        int baseX = screenSize.width - ConfigCarta.LARGURA - PADDING;
+        int baseY = PADDING;
+
         for (PilhaHome pilha : this.JOGO.getBASES()) {
-            // Coloca a imagem de meia-borda
             PilhaBase pilhaBase = new PilhaBase(baseX, baseY, pilha);
             pilha.setBase(pilhaBase);
-            this.getContentPane().add(pilhaBase);
+            pilhaBase.setSize(ConfigCarta.LARGURA, ConfigCarta.ALTURA);
+            layeredPane.add(pilhaBase, Integer.valueOf(1)); // Camada 1
 
-            baseX += DESLOCAMENTO_CARTA_X;
+            baseX -= (ConfigCarta.LARGURA + PADDING);
         }
     }
 
     private void iniciaListas() {
-        int cartaX = 350;
-        int cartaY = 300;
-        int i = 0;
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+        int numListas = this.JOGO.getLISTAS().length;
+        int totalListaWidth = ConfigCarta.LARGURA * numListas + (ConfigCarta.DESLOCAMENTO_X / 2) * (numListas - 1); // Espaço total ocupado pelas listas
+
+        int cartaX = (screenSize.width - totalListaWidth) / 2;
+        int cartaY = screenSize.height / 3 + PADDING;
+
         for (ListaHome lista : this.JOGO.getLISTAS()) {
-            // Coloca a imagem de base inicial (meia-borda)
             ListaBase listaBase = new ListaBase(cartaX, cartaY, lista);
             lista.setBase(listaBase);
-            this.getContentPane().add(listaBase);
+            listaBase.setSize(ConfigCarta.LARGURA, ConfigCarta.ALTURA);
+            layeredPane.add(listaBase, Integer.valueOf(1)); // Camada 1
 
-            // Começa a colocar as cartas de fato
+            // Adiciona as cartas da lista
             for (int j = 0; j < lista.contarNos(); j++) {
-                NoCarta carta = lista.recuperaNo(j+1);
+                NoCarta carta = lista.recuperaNo(j + 1);
                 if (carta != null) {
                     carta.setLocation(cartaX, cartaY);
-                    this.getContentPane().add(carta);
-                    carta.addMouseListener(new CartaMouseListener(this, this.JOGO));
-                    this.getContentPane().setComponentZOrder(carta, lista.contarNos() - j - 1);
-
-                    cartaY += DESLOCAMENTO_CARTA_Y;
+                    carta.setSize(ConfigCarta.LARGURA, ConfigCarta.ALTURA);
+                    carta.addMouseListener(new CartaEvento(this, this.JOGO));
+                    layeredPane.add(carta, Integer.valueOf(2 + j)); // Camadas superiores
+                    cartaY += ConfigCarta.DESLOCAMENTO_Y;
                 }
             }
 
-            cartaX += DESLOCAMENTO_CARTA_X;
-            cartaY = 300;
-            i++;
+            cartaX += ConfigCarta.LARGURA + (ConfigCarta.DESLOCAMENTO_X / 2);
+            cartaY = screenSize.height / 3 + PADDING;
         }
-    }
-
-    public boolean isOptimizedDrawingEnabled() {
-        return false;
     }
 
     private void initComponents() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Paciência - Dev Deck");
-        setBackground(new Color(8, 87, 37));
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
+        setTitle("Paciência - DevDeck");
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        getContentPane().setLayout(null);
+        // Cria o JLayeredPane
+        layeredPane = new JLayeredPane();
+        layeredPane.setPreferredSize(screenSize);
+        setContentPane(layeredPane);
+        layeredPane.setLayout(null); // Posicionamento absoluto
+
+        // Adiciona o background na camada mais baixa usando o painel customizado
+        Image imagemFundo = RecursoImagens.getBackground("tela-fundo.png", screenSize).getImage();
+        FundoPainel backgroundPanel = new FundoPainel(imagemFundo);
+        backgroundPanel.setBounds(0, 0, screenSize.width, screenSize.height);
+        layeredPane.add(backgroundPanel, Integer.valueOf(0)); // Camada 0
+
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setResizable(false);
     }
 
     /**
@@ -278,7 +277,7 @@ public class JogoGUI extends JFrame {
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
                  UnsupportedLookAndFeelException ex) {
-            Logger.getLogger(JogoGUI.class.getName()).log(Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(JogoGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 }

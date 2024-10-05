@@ -14,31 +14,31 @@ public class Baralho {
     public Stack<NoCarta> cartas = new Stack<NoCarta>();
 
     public enum ENaipe {
-        COPAS, OURO, ESPADAS, PAUS
+        JAVA, PYTHON, C, C_MAIS
     }
     
     public enum ECor {
-        VERMELHO, PRETO
+        VERMELHO, AMARELO, CINZA, AZUL
     }
-    
+
     final public static Naipe[] naipes = {
-        new Naipe(ENaipe.COPAS, ECor.VERMELHO),
-        new Naipe(ENaipe.OURO, ECor.VERMELHO),
-        new Naipe(ENaipe.ESPADAS, ECor.PRETO),
-        new Naipe(ENaipe.PAUS, ECor.PRETO)
+        new Naipe(ENaipe.JAVA, ECor.VERMELHO),
+        new Naipe(ENaipe.PYTHON, ECor.AMARELO),
+        new Naipe(ENaipe.C, ECor.CINZA),
+        new Naipe(ENaipe.C_MAIS, ECor.AZUL)
     };
     
     // Carrega o icone da carta fechada
     public final static ImageIcon cartaFechada = new ImageIcon(
-            new ImageIcon(ClassLoader.getSystemResource("cartas/back.png"))
+            new ImageIcon(ClassLoader.getSystemResource("cartas/fundo.png"))
                     .getImage()
-                    .getScaledInstance(ConfigCarta.LARGURA_CARTA, ConfigCarta.ALTURA_CARTA, Image.SCALE_SMOOTH)
+                    .getScaledInstance(ConfigCarta.LARGURA, ConfigCarta.ALTURA, Image.SCALE_SMOOTH)
     );
 
     public Baralho() {
         // Cria as cartas
         int i = 0;
-        for (int numCarta = 0; numCarta < 13; numCarta++) {
+        for (int numCarta = 0; numCarta < 7; numCarta++) {
             for (Naipe naipe : Baralho.naipes) {
                 NoCarta nc = new NoCarta(numCarta + 1, naipe);
                 cartas.push(nc);
