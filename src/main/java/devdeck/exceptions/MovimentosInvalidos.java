@@ -1,7 +1,9 @@
 package devdeck.exceptions;
 
 /**
- * Exception que será jogada quando algum movimento inválido for jogado
+ * Exceção que será lançada quando um movimento inválido for realizado.
+ * Esta classe estende {@code IOException} e fornece códigos de erro
+ * para diferentes tipos de movimentos inválidos que podem ocorrer no jogo.
  */
 public class MovimentosInvalidos extends java.io.IOException {
     public final static int GENERICO = 0;
@@ -10,17 +12,32 @@ public class MovimentosInvalidos extends java.io.IOException {
     public final static int LISTA_VAZIA_APENAS_REIS = 3;
     public final static int LISTA_SEQUENCIA_INVALIDA = 4;
     public final static int PILHA_NO_SEQUENCIA_INVALIDA = 5;
-    
+
     private int code = 0;
-    
+
+    /**
+     * Construtor da exceção MovimentosInvalidos.
+     *
+     * @param code Código que representa o tipo de movimento inválido.
+     */
     public MovimentosInvalidos(int code) {
         this.code = code;
     }
-    
+
+    /**
+     * Obtém o código do movimento inválido.
+     *
+     * @return O código associado à exceção.
+     */
     public int getCode() {
         return this.code;
     }
-    
+
+    /**
+     * Obtém uma mensagem descritiva sobre o movimento inválido.
+     *
+     * @return Uma string com a mensagem de erro formatada em HTML.
+     */
     @Override
     public String getMessage() {
         String msg = "<span style=\"color: #0000ff;\">Movimento Inválido</span><br />";
