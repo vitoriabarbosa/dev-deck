@@ -51,19 +51,6 @@ public class ListaCarta {
         return 0;
     }
     
-    protected NoCarta buscarNo(int num) {
-        int pos = 0;
-        NoCarta aux = primeiro;
-        while (pos < num) {
-            pos++;
-            if (pos == num) {
-                return aux;
-            }
-            aux = aux.getProx();
-        }
-        return null;
-    }
-    
     public NoCarta recuperaNo(int num) {
         int pos = 1;
         NoCarta aux = primeiro;

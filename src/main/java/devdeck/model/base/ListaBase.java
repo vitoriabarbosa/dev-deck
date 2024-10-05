@@ -2,8 +2,7 @@ package devdeck.model.base;
 
 import devdeck.model.home.ListaHome;
 import devdeck.utils.ConfigCarta;
-import devdeck.utils.RecursosUteis;
-import devdeck.view.JogoGUI;
+import devdeck.utils.RecursoImagens;
 
 import java.awt.*;
 
@@ -16,8 +15,8 @@ public class ListaBase extends Base {
     public ListaBase(int x, int y, ListaHome home) {
         this.x = x;
         this.y = y;
-        this.setIcon(RecursosUteis.getCarta("border_half.png"));
-        this.setBounds(0, 0, ConfigCarta.LARGURA_CARTA, ConfigCarta.ALTURA_CARTA);
+        this.setIcon(RecursoImagens.getCarta("borda-metade.png"));
+        this.setBounds(0, 0, ConfigCarta.LARGURA, ConfigCarta.ALTURA);
         this.setLocation(this.x, this.y);
         this.home = home;
     }
@@ -29,9 +28,9 @@ public class ListaBase extends Base {
     @Override
     public Point getNextCardPoint() {
         int nextY = this.getBaseY();
-        if(this.home.contarNos() > 0)
-            nextY += (JogoGUI.DESLOCAMENTO_CARTA_Y * this.home.contarNos()+1);
-            
+        if (this.home.contarNos() > 0) {
+            nextY += (ConfigCarta.DESLOCAMENTO_Y * this.home.contarNos() + 1);
+        }
         return new Point(this.getBaseX(), nextY);
     }
     

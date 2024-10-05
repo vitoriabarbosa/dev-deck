@@ -1,11 +1,11 @@
 package devdeck;
 
-import devdeck.utils.FundoPainel;
+import devdeck.utils.RecursoImagens;
+import devdeck.utils.component.FundoPainel;
 import devdeck.view.JogoApp;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Objects;
 
 /**
  * Classe que representa a tela inicial (splash screen) do sistema de gerenciamento de supermercado.
@@ -13,15 +13,16 @@ import java.util.Objects;
  */
 public class InicialFrame extends JFrame {
     public InicialFrame() {
-        setSize(1200, 800);
+        setSize(1300, 800);
         setLocationRelativeTo(null);
+        setTitle("Welcome To DevDeck!");
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        // Adiciona o painel de fundo com a imagem redimensionada
-        FundoPainel fundoPainel = new FundoPainel(new ImageIcon(Objects.requireNonNull(InicialFrame.class.getResource("/ui/fundo-inicial.png"))).getImage());
+        Image imagemFundo = RecursoImagens.getBackground("tela-inicial.png", screenSize).getImage();
+        FundoPainel backgroundPanel = new FundoPainel(imagemFundo);
 
         JPanel content = new JPanel(new BorderLayout());
-        content.add(fundoPainel, BorderLayout.CENTER);
-
+        content.add(backgroundPanel, BorderLayout.CENTER);
         add(content);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }

@@ -13,26 +13,27 @@ public final class JogoApp {
         try {
             UIManager.setLookAndFeel(
             UIManager.getSystemLookAndFeelClassName());
-            
+
             // Inicia o jogo
             JogoApp.novoJogo();
         } catch (Exception e) {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Ocorreu algum erro ao iniciar o jogo :(");
         }
     }
-    
+
     private final Baralho BARALHO;
     private final PilhaHome[] BASES = new PilhaHome[4];
-    private final ListaHome[] LISTAS = new ListaHome[7];
+    private final ListaHome[] LISTAS = new ListaHome[5];
     private MonteHome monteHome;
     public static JFrame frame;
 
     public static void novoJogo() {
         // Se já existir um ui criado, remover
         // @TODO trocar
-        if (JogoApp.frame != null)
+        if (JogoApp.frame != null) {
             JogoApp.frame.dispose();
-
+        }
         new JogoApp();
     }
 
@@ -53,14 +54,13 @@ public final class JogoApp {
         JogoApp.frame = new JogoGUI(this);
         JogoApp.frame.setVisible(true);
     }
-    
     /**
      * Inicia os montes de carta
      */
     public void iniciaMonte() {
         // Separa os 8 montes de 3 cartas que não vão pras listas
         this.monteHome = new MonteHome();
-        for (int j = 0; j < 24; j++) {
+        for (int j = 0; j < 13; j++) {
             NoCarta carta = this.BARALHO.retiraCartaTopo();
             monteHome.inserir(carta);
         }
@@ -70,7 +70,7 @@ public final class JogoApp {
      * Inicia as listas de cartas
      */
     private void iniciaListas() {
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 5; i++) {
             ListaHome listaHome = new ListaHome("Lista " + (i + 1));
 
             // Retira do baralho e receberNo nas listas de cartas
@@ -88,13 +88,12 @@ public final class JogoApp {
      * 
      * @param carta1
      * @param carta2
-     * @return 
      */
     public static boolean cartaSequenciaValida(NoCarta carta1, NoCarta carta2) {
         if (carta1 == null || carta2 == null) {
             return false;
         }
-        return ((carta1.getNumero() == carta2.getNumero() + 1) && (carta1.getNaipe().getCor() != carta2.getNaipe().getCor()));
+        return ((carta1.getNumero() == carta2.getNumero() + 1) && (carta1.getNaipe().getCor() == carta2.getNaipe().getCor()));
     }
 
     public ListaHome[] getLISTAS() {
@@ -115,7 +114,7 @@ public final class JogoApp {
     
     /**
      * Verifica se o jogo acabou.
-     * O jogo termina quando o topo de todas as pilhas-base são K
+     * O jogo termina quando o topo de todas as pilhas-base são 7 (equivale ao K)
      */
     public void verificaFimDeJogo() {
         int numK = 0;
@@ -124,7 +123,7 @@ public final class JogoApp {
                 numK++;
             }
         }
-        
+
         if (numK == 4) {
             JOptionPane.showMessageDialog(null, "Parabéns, você terminou o jogo!");
             JogoApp.novoJogo();
