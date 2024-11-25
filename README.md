@@ -1,9 +1,4 @@
 # 🎮 DEV DECK  🃏
-![GitHub repo size](https://img.shields.io/github/repo-size/vitoriabarbosa/dev-deck?style=for-the-badge)
-![GitHub language count](https://img.shields.io/github/languages/count/vitoriabarbosa/dev-deck?style=for-the-badge)
-![GitHub forks](https://img.shields.io/github/forks/vitoriabarbosa/dev-deck?style=for-the-badge)
-![Bitbucket open issues](https://img.shields.io/bitbucket/issues/vitoriabarbosa/dev-deck?style=for-the-badge)
-![Bitbucket open pull requests](https://img.shields.io/github/issues-pr-closed/vitoriabarbosa/dev-deck?style=for-the-badge)
 
 ## 🕹 Seja bem-vindo(a) ao game! 🥳
 _Dev Deck, um jogo de dev pra dev!_ 🧑‍💻
