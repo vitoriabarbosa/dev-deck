@@ -5,8 +5,15 @@ import devdeck.model.NoCarta;
 import devdeck.model.home.ListaHome;
 import devdeck.model.home.MonteHome;
 import devdeck.model.home.PilhaHome;
+import devdeck.utils.charts.GraficoEficiencia;
+import devdeck.utils.charts.GraficoMovimentos;
+import devdeck.utils.component.EfeitoConfetes;
+import devdeck.utils.event.CartaEvento;
 
 import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A classe {@code JogoApp} é responsável por gerenciar a lógica principal do jogo de paciência,
@@ -14,7 +21,6 @@ import javax.swing.*;
  * Também contém métodos para validar regras do jogo e verificar o estado de término do jogo.
  */
 public final class JogoApp {
-
     /**
      * O método principal que inicializa a aplicação do jogo.
      *
@@ -23,9 +29,7 @@ public final class JogoApp {
     public static void main(String[] args) {
         try {
             // Define o visual da interface para o padrão do sistema
-            UIManager.setLookAndFeel(
-                    UIManager.getSystemLookAndFeelClassName());
-
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             // Inicia o jogo
             JogoApp.novoJogo();
         } catch (Exception e) {
@@ -39,6 +43,26 @@ public final class JogoApp {
     private final ListaHome[] LISTAS = new ListaHome[5];
     private MonteHome monteHome;
     public static JFrame frame;
+    private final CartaEvento cartaEvento;
+
+    private GraficoMovimentos graficoMovimentos;
+    private int movimentosValidos = 0;
+    private int movimentosInvalidos = 0;
+    private int movimentosTotal = 0;
+
+    private GraficoEficiencia graficoEficiencia;
+    private Timer cronometroTimer;
+    private int segundosDecorridos;
+
+    private final List<Integer> movimentosValidosAoLongoDoTempo = new ArrayList<>();
+    private final List<Integer> movimentosInvalidosAoLongoDoTempo = new ArrayList<>();
+    private final List<Integer> tempoAoLongoDoTempo = new ArrayList<>();
+
+    private int pontuacao = 0; // Pontuação atual do jogador
+    private final int BONUS_FINAL = 100; // Bônus ao completar o jogo
+    private final int PENALIDADE_INVALIDOS = -15; // Penalidade para movimentos inválidos
+    private final int RECOMPENSA_VALIDOS = 20; // Pontos por movimentos válidos
+    private final double BONUS_TEMPO = 0.5; // Multiplicador de tempo (ex.: 0.5 por segundo economizado)
 
     /**
      * Inicia um novo jogo, criando uma nova instância do jogo e sua interface gráfica.
@@ -55,32 +79,87 @@ public final class JogoApp {
      * Construtor privado da classe {@code JogoApp}.
      * Inicializa o baralho, as bases, as listas, os montes e a interface gráfica.
      */
-    private JogoApp() {
+    public JogoApp() {
         BARALHO = new Baralho();
 
-        // Cria as pilhas-base para cartas finais
-        BASES[0] = new PilhaHome("Pilha 1");
-        BASES[1] = new PilhaHome("Pilha 2");
-        BASES[2] = new PilhaHome("Pilha 3");
-        BASES[3] = new PilhaHome("Pilha 4");
-
-        // Inicializa os montes e listas
+        // Inicializa os montes, pilhas e listas
         this.iniciaMonte();
+        this.inicializaPilhas();
         this.iniciaListas();
 
         // Inicializa a interface gráfica
         JogoApp.frame = new JogoGUI(this);
+
+        // Instância de CartaEvento
+        cartaEvento = new CartaEvento(frame, this);
+        graficoMovimentos = new GraficoMovimentos(this.getMovimentosValidos(), this.getMovimentosInvalidos(), this.movimentosTotal);
+        graficoEficiencia = new GraficoEficiencia(this);
+
+        // Inicia o cronômetro
+        this.iniciaCronometro((JogoGUI) JogoApp.frame);
+
+        // Exibe o frame
         JogoApp.frame.setVisible(true);
+
+    }
+
+    // Métodos getters para acessar as variáveis
+    public List<Integer> getMovimentosValidosAoLongoDoTempo() {
+        return movimentosValidosAoLongoDoTempo;
+    }
+
+    public List<Integer> getMovimentosInvalidosAoLongoDoTempo() {
+        return movimentosInvalidosAoLongoDoTempo;
+    }
+
+    public List<Integer> getTempoAoLongoDoTempo() {
+        return tempoAoLongoDoTempo;
+    }
+
+
+    // Iniciar o cronômetro
+    public void iniciaCronometro(JogoGUI jogoGUI) {
+        segundosDecorridos = 0;
+
+        cronometroTimer = new Timer(1000, e -> {
+            segundosDecorridos++;
+            int minutos = segundosDecorridos / 60;
+            int segundos = segundosDecorridos % 60;
+            String tempoFormatado = String.format("%02d:%02d", minutos, segundos);
+
+            // Atualiza o cronômetro na GUI
+            jogoGUI.atualizaCronometro(tempoFormatado);
+
+            // Armazena os dados para o gráfico
+            tempoAoLongoDoTempo.add(segundosDecorridos);
+            movimentosValidosAoLongoDoTempo.add(movimentosValidos);
+            movimentosInvalidosAoLongoDoTempo.add(movimentosInvalidos);
+        });
+        cronometroTimer.start();
+    }
+
+    // Parar o cronômetro, se necessário
+    public void paraCronometro() {
+        if (cronometroTimer != null) {
+            cronometroTimer.stop();
+        }
     }
 
     /**
      * Inicia o monte de cartas, separando as 13 cartas do monte inicial.
      */
     public void iniciaMonte() {
-        this.monteHome = new MonteHome();
+        this.monteHome = new MonteHome(cartaEvento);
         for (int j = 0; j < 13; j++) {
             NoCarta carta = this.BARALHO.retiraCartaTopo();
             monteHome.inserir(carta);
+        }
+    }
+
+    private void inicializaPilhas() {
+        for (int i = 0; i < 4; i++) {
+            PilhaHome pilha = new PilhaHome("Pilha " + (i + 1), this, cartaEvento);
+            this.BASES[i] = pilha;
         }
     }
 
@@ -89,7 +168,7 @@ public final class JogoApp {
      */
     private void iniciaListas() {
         for (int i = 0; i < 5; i++) {
-            ListaHome listaHome = new ListaHome("Lista " + (i + 1));
+            ListaHome listaHome = new ListaHome("Lista " + (i + 1), cartaEvento);
 
             // Insere cartas retiradas do baralho nas listas
             for (int j = 0; j < (i + 1); j++) {
@@ -152,21 +231,111 @@ public final class JogoApp {
         return this.BARALHO;
     }
 
+    public void incrementarMovimentosValidos() {
+        movimentosValidos++;
+        movimentosTotal = movimentosValidos + movimentosInvalidos;
+        graficoMovimentos.atualizarDados(movimentosValidos, movimentosInvalidos, movimentosTotal);
+
+        atualizarPontuacao(true); // Incrementa a pontuação por movimento válido
+        ((JogoGUI) frame).atualizaPontuacao(); // Atualiza a pontuação na GUI
+    }
+
+    public void incrementarMovimentosInvalidos() {
+        movimentosInvalidos++;
+        movimentosTotal = movimentosValidos + movimentosInvalidos;
+        graficoMovimentos.atualizarDados(movimentosValidos, movimentosInvalidos, movimentosTotal);
+
+        atualizarPontuacao(false); // Penaliza a pontuação por movimento inválido
+        ((JogoGUI) frame).atualizaPontuacao(); // Atualiza a pontuação na GUI
+    }
+
+    public int getMovimentosValidos() {
+        return movimentosValidos;
+    }
+
+    public int getMovimentosInvalidos() {
+        return movimentosInvalidos;
+    }
+
+    public int getMovimentosTotal() {
+        return movimentosTotal;
+    }
+
+    // Calcula a pontuação com base em critérios definidos
+    public void atualizarPontuacao(boolean movimentoValido) {
+        if (movimentoValido) {
+            pontuacao += RECOMPENSA_VALIDOS;
+        } else {
+            pontuacao += PENALIDADE_INVALIDOS;
+        }
+    }
+
+    // Bônus final ao concluir o jogo
+    public void aplicarBonusFinal() {
+        int tempoEconomizado = 120 - segundosDecorridos; // Exemplo: jogo deve ser completado em 150 segundos
+        if (tempoEconomizado > 0) {
+            pontuacao += BONUS_FINAL + (int) (tempoEconomizado * BONUS_TEMPO);
+        } else {
+            pontuacao += BONUS_FINAL; // Apenas o bônus final se exceder o tempo
+        }
+    }
+
+    // Obter a pontuação atual
+    public int getPontuacao() {
+        return pontuacao;
+    }
+
     /**
-     * Verifica se o jogo acabou.
-     * O jogo é considerado concluído quando o topo de todas as quatro pilhas-base contém uma carta de valor "K" (Rei).
+     * Método para verificar se o jogo acabou.
+     * Chama as verificações de fim de jogo nas pilhas.
      */
     public void verificaFimDeJogo() {
-        int numK = 0;
-        for (PilhaHome pilhaHome : this.BASES) {
-            if (pilhaHome.elementoTopo() != null && pilhaHome.elementoTopo().getNumRep().equals("k")) {
-                numK++;
+        // Verifica todas as pilhas se estão completas
+        boolean todasCompletas = true;
+        for (PilhaHome pilha : BASES) {
+            if (!pilha.verificarPilhaCompleta()) {
+                todasCompletas = false;
+                break;
             }
         }
 
-        if (numK == 4) {
-            JOptionPane.showMessageDialog(null, "Parabéns, você terminou o jogo!");
-            JogoApp.novoJogo();
+        if (todasCompletas) {
+            aplicarBonusFinal();
+            ((JogoGUI) frame).atualizaPontuacao(); // Atualiza a pontuação após aplicar o bônus
+
+            // Exibe mensagem de parabéns
+            System.out.println("Você completou todas as pilhas! Parabéns!");
+            paraCronometro();
+            JOptionPane.showMessageDialog(frame, "Você completou todas as pilhas! Parabéns!");
+
+            // Inicia o efeito de confetes diretamente no frame principal
+            Dimension screenSize = frame.getSize();
+            EfeitoConfetes efeitoConfetes = new EfeitoConfetes(screenSize);
+
+            // Painel de confetes transparente sobre a tela do jogo
+            JPanel confettiPanel = new JPanel(new BorderLayout());
+            confettiPanel.setOpaque(false); // Transparente para manter a visibilidade do jogo
+            confettiPanel.setBounds(0, 0, screenSize.width, screenSize.height);
+            confettiPanel.add(efeitoConfetes, BorderLayout.CENTER);
+
+            // Adiciona o painel de confetes ao frame
+            JLayeredPane layeredPane = frame.getLayeredPane();
+            layeredPane.add(confettiPanel, JLayeredPane.POPUP_LAYER); // Colocado acima dos elementos do jogo
+            efeitoConfetes.startConfettiEffect();
+
+            // Exibe a tela de estatísticas
+            SwingUtilities.invokeLater(() -> {
+                TelaEstatisticas telaEstatisticas = new TelaEstatisticas(graficoEficiencia, graficoMovimentos, efeitoConfetes, pontuacao);
+                telaEstatisticas.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosed(java.awt.event.WindowEvent e) {
+                        efeitoConfetes.stopConfettiEffect(); // Para os confetes
+                        layeredPane.remove(confettiPanel);  // Remove o painel de confetes
+                        layeredPane.repaint();
+                    }
+                });
+                telaEstatisticas.setVisible(true);
+            });
         }
     }
 }

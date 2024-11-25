@@ -7,6 +7,7 @@ import devdeck.model.home.Home;
 import devdeck.model.home.MonteHome;
 import devdeck.model.home.PilhaHome;
 import devdeck.utils.ConfigCarta;
+import devdeck.utils.charts.GraficoMovimentos;
 import devdeck.view.JogoApp;
 import devdeck.view.JogoGUI;
 
@@ -26,6 +27,7 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
     private NoCarta carta;
     private final Container PAINEL;
     private final JogoApp JOGO;
+    private final GraficoMovimentos graficoMovimentos;
 
     private Point cartaOriginalLocation;
     private Point primeiroClique = new Point();
@@ -39,6 +41,8 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
     public CartaEvento(JFrame frame, JogoApp JOGO) {
         this.JOGO = JOGO;
         this.PAINEL = frame.getContentPane();
+
+        graficoMovimentos = new GraficoMovimentos(JOGO.getMovimentosValidos(), JOGO.getMovimentosInvalidos(), JOGO.getMovimentosTotal());
     }
 
     @Override
@@ -49,13 +53,15 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
             for (PilhaHome base : this.JOGO.getBASES()) {
                 if (!cartaColocada) {
                     try {
-                        me.getComponent();
-                        base.receberNo(carta);
+                        base.receberNo(carta); // Movimenta a carta para a base
 
                         Point nextCardPoint = base.getBase().getNextCardPoint();
                         this.setNoCartaLocation(carta, nextCardPoint);
                         cartaColocada = true;
-                    } catch(MovimentosInvalidos ignored) {}
+
+                        // Incrementa os movimentos válidos e totais
+                        this.JOGO.incrementarMovimentosValidos();
+                    } catch (MovimentosInvalidos ignored) {}
                 }
             }
         }
@@ -86,9 +92,13 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
                 Point nextCardPoint = homeTo.getBase().getNextCardPoint();
                 homeTo.receberNo(carta);
 
-                // Por fim, coloca as cartas no lugar
+                // coloca as cartas no lugar
                 this.setNoCartaLocation(carta, nextCardPoint);
                 JogoGUI.hideWarning();
+
+                // incrementar e atualizar o gráfico para movimentos válidos
+                JOGO.incrementarMovimentosValidos();
+                graficoMovimentos.atualizarDados(JOGO.getMovimentosValidos(), JOGO.getMovimentosInvalidos(), JOGO.getMovimentosTotal());
 
                 if (homeTo instanceof PilhaHome) {
                     this.JOGO.verificaFimDeJogo();
@@ -101,6 +111,10 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
 
             if (ex.getCode() != MovimentosInvalidos.GENERICO) {
                 JogoGUI.showWarning("<html>" + ex.getMessage());
+
+                // incrementar e atualizar o gráfico para movimentos inválidos
+                JOGO.incrementarMovimentosInvalidos();
+                graficoMovimentos.atualizarDados(JOGO.getMovimentosValidos(), JOGO.getMovimentosInvalidos(), JOGO.getMovimentosTotal());
             }
         }
     }
@@ -113,18 +127,24 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
      */
     private void setNoCartaLocation(NoCarta nc, Point ponto) {
         this.carta = nc;
-        // Controle de Z-Index e cartas-filha
+
+        // Controle de Z-Index e cartas conectadas
         NoCarta aux = carta;
-        int totalProx = carta.getCountProx();
+        int totalProx = carta.getCountProx(); // Número de cartas conectadas
         int locationX = ponto.x;
         int locationY = ponto.y;
         int i = 0;
+
         while (aux != null) {
             aux.setLocation(locationX, locationY);
-            this.PAINEL.setComponentZOrder(aux, totalProx - i);
 
-            locationY += ConfigCarta.DESLOCAMENTO_Y;
-            aux = aux.getProx();
+            // Atualiza apenas o Z-order se necessário (evita tremores)
+            if (this.PAINEL.getComponentZOrder(aux) != totalProx - i) {
+                this.PAINEL.setComponentZOrder(aux, totalProx - i);
+            }
+
+            locationY += ConfigCarta.DESLOCAMENTO_Y; // Ajusta o deslocamento vertical
+            aux = aux.getProx(); // Vai para a próxima carta
             i++;
         }
     }
@@ -137,8 +157,12 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
      * @throws MovimentosInvalidos se não for possível determinar a área "Home"
      */
     private Home findHomeAt(MouseEvent me) throws MovimentosInvalidos {
-        // Recupera o ponto do evento do mouse.
-        // Como o componente neste local vai ser a própria carta, desabilita a carta e pega o elemento de trás depois reabilita a carta de volta
+
+        /*
+          Recupera o ponto do evento do mouse.
+          Como o componente neste local vai ser a própria carta,
+          desabilita a carta e pega o elemento de trás depois reabilita a carta de volta
+         */
         try {
             Point ponto = SwingUtilities.convertPoint(me.getComponent(), me.getPoint(), this.PAINEL);
             me.getComponent().setVisible(false);
@@ -167,16 +191,21 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
     @Override
     public void mouseExited(MouseEvent me) {}
 
+    private boolean emMovimento = false;
+
     @Override
     public void mouseDragged(MouseEvent me) {
-        if (!carta.isDraggable()) {
+        if (!carta.isDraggable() || emMovimento) {
             return;
         }
+
+        emMovimento = true; // Evita processamento duplicado
 
         Point ponto1 = SwingUtilities.convertPoint(me.getComponent(), me.getPoint(), this.PAINEL);
         Point ponto = new Point(ponto1.x - primeiroClique.x, ponto1.y - primeiroClique.y);
 
         this.setNoCartaLocation(carta, ponto);
+        emMovimento = false; // Libera o bloqueio
     }
 
     @Override

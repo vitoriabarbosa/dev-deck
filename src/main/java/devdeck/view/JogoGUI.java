@@ -34,6 +34,8 @@ public class JogoGUI extends JFrame {
     public JLabel[] visualCartasMonte = new JLabel[3];
     public static JLabel warningBg;
     public static JLabel warningBox;
+    private JLabel cronometroLabel;
+    private JLabel pontuacaoLabel;
 
     /**
      * Cria uma nova instância da interface gráfica do jogo.
@@ -293,29 +295,35 @@ public class JogoGUI extends JFrame {
         // Adiciona o background na camada mais baixa usando o painel customizado
         Image imagemFundo = RecursoImagens.getBackground("tela-fundo.png", screenSize).getImage();
         FundoPainel backgroundPanel = new FundoPainel(imagemFundo);
-        backgroundPanel.setBounds(0, 0, screenSize.width, screenSize.height);
+        backgroundPanel.setBounds(0, 0, screenSize.width, screenSize.height-60);
         layeredPane.add(backgroundPanel, Integer.valueOf(0));
+
+        // Configurar cronômetro
+        cronometroLabel = new JLabel("Tempo da Partida: 00:00");
+        cronometroLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        cronometroLabel.setForeground(Color.WHITE);
+        cronometroLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        cronometroLabel.setBounds(screenSize.width-400, 20, 300, 30);
+        layeredPane.add(cronometroLabel, Integer.valueOf(1));
+
+        pontuacaoLabel = new JLabel("Pontuação: 0");
+        pontuacaoLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        pontuacaoLabel.setForeground(Color.WHITE);
+        pontuacaoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        pontuacaoLabel.setBounds(screenSize.width/2-100, 20, 200, 30); // Posicionado no canto superior esquerdo
+        layeredPane.add(pontuacaoLabel, Integer.valueOf(1));
 
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setResizable(false);
     }
 
-    /**
-     * O método principal que inicializa e exibe a interface do jogo.
-     *
-     * @param args Argumentos da linha de comando.
-     */
-    public static void main(String args[]) {
-        try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-                 UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(JogoGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+    // Atualizar o cronômetro
+    public void atualizaCronometro(String tempo) {
+        cronometroLabel.setText("Tempo da Partida: " + tempo);
+    }
+
+    // Atualizar pontuação em tempo real
+    public void atualizaPontuacao() {
+        pontuacaoLabel.setText("Pontuação: " + JOGO.getPontuacao());
     }
 }

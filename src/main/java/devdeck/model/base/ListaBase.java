@@ -16,7 +16,7 @@ public class ListaBase extends Base {
     /**
      * A lista de cartas associada a este elemento base.
      */
-    public ListaHome home = null;
+    public ListaHome home;
 
     /**
      * Construtor que cria uma nova instância de {@code ListaBase}

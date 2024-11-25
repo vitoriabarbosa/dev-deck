@@ -32,30 +32,12 @@ public abstract class Base extends JLabel {
     abstract public Home getHome();
 
     /**
-     * Define a coordenada x da base.
-     *
-     * @param x A nova coordenada x.
-     */
-    public void setBaseX(int x) {
-        this.x = x;
-    }
-
-    /**
      * Retorna a coordenada x da base.
      *
      * @return A coordenada x atual da base.
      */
     public int getBaseX() {
         return this.x;
-    }
-
-    /**
-     * Define a coordenada y da base.
-     *
-     * @param y A nova coordenada y.
-     */
-    public void setBaseY(int y) {
-        this.y = y;
     }
 
     /**
