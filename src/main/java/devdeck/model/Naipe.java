@@ -11,12 +11,12 @@ public class Naipe {
     /**
      * O tipo do naipe (e.g., JAVA, PYTHON, C, C++).
      */
-    private ENaipe naipe;
+    private final ENaipe naipe;
 
     /**
      * A cor do naipe (e.g., VERMELHO, AMARELO, CINZA, AZUL).
      */
-    private ECor cor;
+    private final ECor cor;
 
     /**
      * Construtor que cria um novo naipe com um tipo de naipe e uma cor.

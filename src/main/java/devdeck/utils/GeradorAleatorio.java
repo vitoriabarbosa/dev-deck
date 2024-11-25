@@ -29,31 +29,4 @@ public class GeradorAleatorio {
     public int nextInt(int bound) {
         return random.nextInt(bound);
     }
-
-    /**
-     * Retorna um número double aleatório entre 0.0 (inclusivo)
-     * e 1.0 (exclusivo).
-     *
-     * @return Um número double aleatório entre 0.0 e 1.0.
-     */
-    public double nextDouble() {
-        return random.nextDouble();
-    }
-
-    /**
-     * Embaralha um array de inteiros in-place.
-     * Utiliza o algoritmo de Fisher-Yates para garantir que todos
-     * os arranjos possíveis do array tenham a mesma probabilidade
-     * de serem gerados.
-     *
-     * @param array O array de inteiros a ser embaralhado.
-     */
-    public void shuffleArray(int[] array) {
-        for (int i = array.length - 1; i > 0; i--) {
-            int index = nextInt(i + 1);
-            int temp = array[index];
-            array[index] = array[i];
-            array[i] = temp;
-        }
-    }
 }

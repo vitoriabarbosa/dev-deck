@@ -17,7 +17,7 @@ final public class PilhaBase extends Base {
     /**
      * A pilha de cartas associada a esta base.
      */
-    protected PilhaHome home = null;
+    private final PilhaHome home;
 
     /**
      * Construtor que cria uma nova instância de {@code PilhaBase}

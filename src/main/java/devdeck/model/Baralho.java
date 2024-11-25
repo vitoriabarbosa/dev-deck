@@ -8,7 +8,7 @@ import java.awt.*;
 import java.util.Stack;
 
 /**
- * A classe {@code Baralho} representa um baralho de cartas contendo 52 cartas com 4 naipes diferentes.
+ * A classe {@code Baralho} representa um baralho de cartas contendo 28 cartas com 4 naipes diferentes.
  * Ela também inclui a lógica para embaralhar as cartas e fornecer a carta do topo.
  */
 public class Baralho {
@@ -52,7 +52,7 @@ public class Baralho {
     );
 
     /**
-     * Construtor da classe {@code Baralho}. Ele cria as 52 cartas, distribuídas entre os 4 naipes,
+     * Construtor da classe {@code Baralho}. Ele cria as 28 cartas, distribuídas entre os 4 naipes,
      * e as embaralha.
      */
     public Baralho() {

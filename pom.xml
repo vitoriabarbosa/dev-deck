@@ -14,6 +14,22 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+        <!-- Dependência do JFreeChart -->
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.5.3</version> <!-- Certifique-se de usar a versão mais recente -->
+        </dependency>
+
+        <!-- Dependência do JCommon (pode não ser necessária, pois vem integrada com JFreeChart mais recente) -->
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jcommon</artifactId>
+            <version>1.0.24</version> <!-- Versão que acompanha JFreeChart -->
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -45,5 +61,5 @@
                 </includes>
             </resource>
         </resources>
-        </build>
+    </build>
 </project>

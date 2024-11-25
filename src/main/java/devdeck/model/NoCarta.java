@@ -16,12 +16,12 @@ final public class NoCarta extends JLabel {
     /**
      * O número da carta (de 1 a 7).
      */
-    private int numero;
+    private final int numero;
 
     /**
      * O ícone da carta quando está aberta (frente).
      */
-    private ImageIcon openedIcon;
+    private final ImageIcon openedIcon;
 
     /**
      * O naipe da carta.
@@ -198,16 +198,6 @@ final public class NoCarta extends JLabel {
      */
     public Naipe getNaipe() {
         return this.naipe;
-    }
-
-    /**
-     * Retorna uma representação textual da carta no formato "A de JAVA".
-     *
-     * @return A representação textual da carta.
-     */
-    @Override
-    public String toString() {
-        return this.getNumRep() + " de " + this.getNaipe().getNaipe().name();
     }
 
     /**

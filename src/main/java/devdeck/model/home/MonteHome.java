@@ -3,6 +3,7 @@ package devdeck.model.home;
 import devdeck.exceptions.MovimentosInvalidos;
 import devdeck.model.NoCarta;
 import devdeck.model.base.Base;
+import devdeck.utils.event.CartaEvento;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -12,6 +13,8 @@ import java.util.Stack;
  * Um monte pode conter até 3 cartas e é mostrado no topo esquerdo do jogo.
  */
 public class MonteHome implements Home {
+
+    private CartaEvento cartaEvento;
 
     /**
      * Lista de montes, onde cada monte é representado por uma {@code Stack<NoCarta>}.
@@ -32,9 +35,14 @@ public class MonteHome implements Home {
      * Recebe uma carta no monte.
      * Este método não é utilizado diretamente em {@code MonteHome}.
      *
-     * @param carta A carta a ser recebida.
+     * @param cartaEvento A carta a ser recebida.
      * @throws MovimentosInvalidos Este método não lança exceções, pois não é implementado.
      */
+
+    public MonteHome(CartaEvento cartaEvento) {
+        this.cartaEvento = cartaEvento;
+    }
+
     @Override
     public void receberNo(NoCarta carta) throws MovimentosInvalidos {
         // Não utilizado em MonteHome
@@ -87,6 +95,10 @@ public class MonteHome implements Home {
         }
         noCarta.setHome(this);
         monteAtual.add(noCarta);
+
+        // Associa eventos à carta
+        noCarta.addMouseListener(cartaEvento);
+        noCarta.addMouseMotionListener(cartaEvento);
     }
 
     /**
