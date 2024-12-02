@@ -4,7 +4,6 @@ import devdeck.exceptions.MovimentosInvalidos;
 import devdeck.model.NoCarta;
 import devdeck.model.base.Base;
 import devdeck.model.base.ListaCarta;
-import devdeck.utils.event.CartaEvento;
 import devdeck.view.JogoApp;
 
 /**
@@ -13,8 +12,6 @@ import devdeck.view.JogoApp;
  * principais do jogo de paciência.
  */
 public class ListaHome extends ListaCarta implements Home {
-
-    private CartaEvento cartaEvento;
 
     /**
      * Base associada à lista.
@@ -26,9 +23,8 @@ public class ListaHome extends ListaCarta implements Home {
      *
      * @param nome O nome da lista.
      */
-    public ListaHome(String nome, CartaEvento cartaEvento) {
+    public ListaHome(String nome) {
         super(nome);
-        this.cartaEvento = cartaEvento;
     }
 
     /**

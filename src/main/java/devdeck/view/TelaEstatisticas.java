@@ -1,35 +1,59 @@
 package devdeck.view;
 
-import devdeck.utils.charts.GraficoEficiencia;
-import devdeck.utils.charts.GraficoMovimentos;
+import devdeck.utils.charts.*;
 import devdeck.utils.component.EfeitoConfetes;
 import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.List;
 
-/**
- * Tela de Estatísticas para exibir gráficos de desempenho após o término do jogo.
- */
 public class TelaEstatisticas extends JDialog {
     private final GraficoEficiencia graficoEficiencia;
     private final GraficoMovimentos graficoMovimentos;
-    private final EfeitoConfetes efeitoConfetes;
+    private final GraficoVelocidade graficoVelocidade;
+    private final GraficoEsforcoTotal graficoEsforcoTotal;
     private final int pontuacao;
+    private final List<Integer> movimentosValidosAoLongoDoTempo;
+    private final List<Integer> movimentosInvalidosAoLongoDoTempo;
+    private final List<Integer> duracaoPartida;
+    private final int movimentosValidos;
+    private final int movimentosInvalidos;
+    private final int tempoFinal;
 
-
-    public TelaEstatisticas(GraficoEficiencia graficoEficiencia, GraficoMovimentos graficoMovimentos, EfeitoConfetes efeitoConfetes, int pontuacao) {
+    public TelaEstatisticas(
+            GraficoEficiencia graficoEficiencia,
+            GraficoMovimentos graficoMovimentos,
+            GraficoVelocidade graficoVelocidade,
+            GraficoEsforcoTotal graficoEsforcoTotal,
+            EfeitoConfetes efeitoConfetes,
+            int pontuacao,
+            List<Integer> movimentosValidosAoLongoDoTempo,
+            List<Integer> movimentosInvalidosAoLongoDoTempo,
+            List<Integer> duracaoPartida,
+            int movimentosValidos,
+            int movimentosInvalidos,
+            int tempoFinal) {
         super((JFrame) null, "Estatísticas do Jogo", true);
         this.graficoEficiencia = graficoEficiencia;
         this.graficoMovimentos = graficoMovimentos;
-        this.efeitoConfetes = efeitoConfetes;
+        this.graficoVelocidade = graficoVelocidade;
+        this.graficoEsforcoTotal = graficoEsforcoTotal;
         this.pontuacao = pontuacao;
+        this.movimentosValidosAoLongoDoTempo = movimentosValidosAoLongoDoTempo;
+        this.movimentosInvalidosAoLongoDoTempo = movimentosInvalidosAoLongoDoTempo;
+        this.duracaoPartida = duracaoPartida;
+        this.movimentosValidos = movimentosValidos;
+        this.movimentosInvalidos = movimentosInvalidos;
+        this.tempoFinal = tempoFinal;
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(1500, 700);
+        setSize(1200, 700);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
-        getContentPane().setBackground(new Color(240, 240, 240)); // Cor de fundo neutra
+        getContentPane().setBackground(new Color(240, 240, 240, 29));
 
         inicializarLayout();
 
@@ -43,35 +67,111 @@ public class TelaEstatisticas extends JDialog {
     }
 
     private void inicializarLayout() {
-        JPanel painelPrincipal = new JPanel(new GridLayout(1, 2, 10, 10));
-        painelPrincipal.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        painelPrincipal.setBackground(new Color(240, 240, 240));
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.setDividerLocation(750);
 
-        JLabel pontuacaoLabel = new JLabel("Pontuação Final: " + pontuacao, SwingConstants.CENTER);
-        pontuacaoLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
-        pontuacaoLabel.setForeground(new Color(70, 70, 70));
+        // Padronizar títulos dos gráficos
+        padronizarTituloGrafico(graficoEficiencia.getGrafico(), "Gráfico de Eficiência");
+        padronizarTituloGrafico(graficoMovimentos.getGrafico(), "Gráfico de Movimentos");
+        padronizarTituloGrafico(graficoVelocidade.getGrafico(), "Gráfico de Velocidade");
+        padronizarTituloGrafico(graficoEsforcoTotal.getGrafico(), "Gráfico de Esforço Total");
 
-        // Adiciona os gráficos ao painel principal
-        painelPrincipal.add(pontuacaoLabel, BorderLayout.NORTH);
-        painelPrincipal.add(new ChartPanel(graficoEficiencia.getGrafico()));
-        painelPrincipal.add(graficoMovimentos.getContentPane());
+        // Painel com gráficos
+        JPanel painelGraficos = new JPanel(new GridLayout(2, 2, 10, 10));
+        painelGraficos.setBorder(new EmptyBorder(10, 10, 10, 10));
+        painelGraficos.add(new ChartPanel(graficoEficiencia.getGrafico()));
+        painelGraficos.add(new ChartPanel(graficoMovimentos.getGrafico()));
+        painelGraficos.add(new ChartPanel(graficoVelocidade.getGrafico()));
+        painelGraficos.add(new ChartPanel(graficoEsforcoTotal.getGrafico()));
 
-        // Título
-        JLabel titulo = new JLabel("Estatísticas do Jogo", SwingConstants.CENTER);
-        titulo.setFont(new Font("SansSerif", Font.BOLD, 24));
-        titulo.setForeground(new Color(70, 70, 70));
+        // Painel com estatísticas
+        JPanel painelEstatisticas = new JPanel(new BorderLayout(10, 10));
+        painelEstatisticas.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // Botão para fechar
+        JLabel tituloPontuacao = new JLabel("Detalhamento da Pontuação", SwingConstants.CENTER);
+        tituloPontuacao.setFont(new Font("SansSerif", Font.BOLD, 20));
+        painelEstatisticas.add(tituloPontuacao, BorderLayout.NORTH);
+
+        JTextArea areaTexto = getJTextArea();
+        painelEstatisticas.add(new JScrollPane(areaTexto), BorderLayout.CENTER);
+
         JButton btnFechar = new JButton("Fechar");
+        btnFechar.setFont(new Font("Arial", Font.BOLD, 14));
+        btnFechar.setBackground(new Color(94, 23, 235));
+        btnFechar.setForeground(new Color(231, 231, 231));
+        btnFechar.setPreferredSize(new Dimension(getWidth(), 50));
         btnFechar.addActionListener(e -> dispose());
-        btnFechar.setFocusPainted(false);
+        painelEstatisticas.add(btnFechar, BorderLayout.SOUTH);
 
-        JPanel painelRodape = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        painelRodape.add(btnFechar);
+        // Adiciona os paineis ao SplitPane
+        splitPane.setLeftComponent(painelGraficos);
+        splitPane.setRightComponent(painelEstatisticas);
 
-        // Adiciona os componentes à janela
-        add(titulo, BorderLayout.NORTH);
-        add(painelPrincipal, BorderLayout.CENTER);
-        add(painelRodape, BorderLayout.SOUTH);
+        // Adiciona o SplitPane à janela principal
+        add(splitPane, BorderLayout.CENTER);
+    }
+
+    private JTextArea getJTextArea() {
+        JTextArea areaTexto = new JTextArea(10, 30);
+        areaTexto.setFont(new Font("Monospaced", Font.PLAIN, 15));
+        areaTexto.setEditable(false);
+
+        double areaProgresso = calcularAreaProgresso();
+
+        String detalhesPontuacao = String.format("""
+                 
+                 > Movimentos Válidos:        %d  (+20 cada)
+                 > Movimentos Inválidos:      %d  (-15 cada)
+                 > Pontos por Movimentos:     %d
+                 > Tempo Total (segundos):    %d
+                 > Bônus de Tempo:            %d
+                ------------------------------------------
+                
+                 >>> Pontuação Final:         %d
+                 
+                ------------------------------------------
+                
+                
+                 > Esforço Total (Área):      %.2f
+
+                """,
+                movimentosValidos,
+                movimentosInvalidos,
+                (movimentosValidos * 20) + (movimentosInvalidos * -15),
+                tempoFinal,
+                calcularBonusTempo(),
+                pontuacao,
+                areaProgresso);
+
+        areaTexto.setText(detalhesPontuacao);
+        return areaTexto;
+    }
+
+    private int calcularBonusTempo() {
+        int tempoEconomizado = Math.max(0, 120 - tempoFinal);
+        double multiplicador = 0.5;
+        return (int) (tempoEconomizado * multiplicador);
+    }
+
+    private double calcularAreaProgresso() {
+        double area = 0;
+
+        for (int i = 1; i < duracaoPartida.size(); i++) {
+            int tempoAtual = duracaoPartida.get(i);
+            int tempoAnterior = duracaoPartida.get(i - 1);
+
+            int progressoAtual = movimentosValidosAoLongoDoTempo.get(i);
+            int progressoAnterior = movimentosValidosAoLongoDoTempo.get(i - 1);
+
+            area += 0.5 * (tempoAtual - tempoAnterior) * (progressoAtual + progressoAnterior);
+        }
+        return area;
+    }
+
+    private void padronizarTituloGrafico(JFreeChart grafico, String titulo) {
+        grafico.setTitle(new org.jfree.chart.title.TextTitle(
+                titulo, // Título do gráfico
+                new Font("SansSerif", Font.BOLD, 14)
+        ));
     }
 }

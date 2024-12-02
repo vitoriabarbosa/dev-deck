@@ -26,7 +26,7 @@ import java.awt.event.MouseMotionListener;
 public class CartaEvento extends JFrame implements MouseListener, MouseMotionListener {
     private NoCarta carta;
     private final Container PAINEL;
-    private final JogoApp JOGO;
+    private final JogoApp jogoApp;
     private final GraficoMovimentos graficoMovimentos;
 
     private Point cartaOriginalLocation;
@@ -36,13 +36,12 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
      * Constrói uma nova instância de {@code CartaEvento}.
      *
      * @param frame o frame onde os eventos ocorrerão
-     * @param JOGO  a instância do jogo associada a este evento
+     * @param jogoApp  a instância do jogo associada a este evento
      */
-    public CartaEvento(JFrame frame, JogoApp JOGO) {
-        this.JOGO = JOGO;
+    public CartaEvento(JFrame frame, JogoApp jogoApp) {
+        this.jogoApp = jogoApp;
         this.PAINEL = frame.getContentPane();
-
-        graficoMovimentos = new GraficoMovimentos(JOGO.getMovimentosValidos(), JOGO.getMovimentosInvalidos(), JOGO.getMovimentosTotal());
+        graficoMovimentos = new GraficoMovimentos(jogoApp);
     }
 
     @Override
@@ -50,7 +49,7 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
         // Se houver um duplo clique em alguma carta, tenta inserir o nó na base onde conseguir
         if (me.getClickCount() == 2) {
             boolean cartaColocada = false;
-            for (PilhaHome base : this.JOGO.getBASES()) {
+            for (PilhaHome base : this.jogoApp.getBASES()) {
                 if (!cartaColocada) {
                     try {
                         base.receberNo(carta); // Movimenta a carta para a base
@@ -60,7 +59,7 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
                         cartaColocada = true;
 
                         // Incrementa os movimentos válidos e totais
-                        this.JOGO.incrementarMovimentosValidos();
+                        this.jogoApp.incrementarMovimentosValidos();
                     } catch (MovimentosInvalidos ignored) {}
                 }
             }
@@ -97,11 +96,11 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
                 JogoGUI.hideWarning();
 
                 // incrementar e atualizar o gráfico para movimentos válidos
-                JOGO.incrementarMovimentosValidos();
-                graficoMovimentos.atualizarDados(JOGO.getMovimentosValidos(), JOGO.getMovimentosInvalidos(), JOGO.getMovimentosTotal());
+                jogoApp.incrementarMovimentosValidos();
+                graficoMovimentos.atualizarDados(jogoApp.getMovimentosValidos(), jogoApp.getMovimentosInvalidos(), jogoApp.getMovimentosTotal());
 
                 if (homeTo instanceof PilhaHome) {
-                    this.JOGO.verificaFimDeJogo();
+                    this.jogoApp.verificaFimDeJogo();
                 }
             } else {
                 throw new MovimentosInvalidos(MovimentosInvalidos.GENERICO);
@@ -113,8 +112,8 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
                 JogoGUI.showWarning("<html>" + ex.getMessage());
 
                 // incrementar e atualizar o gráfico para movimentos inválidos
-                JOGO.incrementarMovimentosInvalidos();
-                graficoMovimentos.atualizarDados(JOGO.getMovimentosValidos(), JOGO.getMovimentosInvalidos(), JOGO.getMovimentosTotal());
+                jogoApp.incrementarMovimentosInvalidos();
+                graficoMovimentos.atualizarDados(jogoApp.getMovimentosValidos(), jogoApp.getMovimentosInvalidos(), jogoApp.getMovimentosTotal());
             }
         }
     }

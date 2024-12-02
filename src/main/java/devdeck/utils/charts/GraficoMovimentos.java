@@ -1,100 +1,58 @@
 package devdeck.utils.charts;
 
+import devdeck.view.JogoApp;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import javax.swing.*;
-import java.awt.*;
-
-/**
- * A classe {@code GraficoMovimentos} exibe um gráfico de barras mostrando
- * os movimentos válidos e inválidos durante a partida.
- */
-public class    GraficoMovimentos extends JFrame {
-    private DefaultCategoryDataset dataset;
-
-    private int movimentosValidos;
-    private int movimentosInvalidos;
-    private int movimentosTotal;
+public class GraficoMovimentos {
+    private final DefaultCategoryDataset dataset;
+    private final JogoApp jogoApp;
 
     /**
-     * Constrói uma nova instância de {@code GraficoMovimentos}.
+     * Construtor que inicializa o gráfico com os dados de movimentos.
      *
-     * @param validos  número de movimentos válidos
-     * @param invalidos número de movimentos inválidos
-     * @param total número total de movimentos
+     * @param jogoApp Instância de JogoApp para acessar os dados do jogo.
      */
-    public GraficoMovimentos(int validos, int invalidos, int total) {
-        this.movimentosValidos = validos;
-        this.movimentosInvalidos = invalidos;
-        this.movimentosTotal = total;
-
-        setTitle("Estatísticas de Movimentos");
-        setSize(800, 600);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-        // Cria o gráfico e adiciona ao painel
-        JFreeChart chart = createChart();
-        ChartPanel chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new Dimension(800, 600));
-
-        setContentPane(chartPanel);
+    public GraficoMovimentos(JogoApp jogoApp) {
+        this.jogoApp = jogoApp;
+        this.dataset = new DefaultCategoryDataset();
+        inicializarDados();
     }
 
     /**
-     * Cria o gráfico de barras com base nos dados de movimentos.
-     *
-     * @return o gráfico criado
+     * Inicializa o conjunto de dados do gráfico.
      */
-    private JFreeChart createChart() {
-        dataset = new DefaultCategoryDataset();
+    private void inicializarDados() {
+        dataset.setValue(jogoApp.getMovimentosValidos(), "Movimentos", "Válidos");
+        dataset.setValue(jogoApp.getMovimentosInvalidos(), "Movimentos", "Inválidos");
+        dataset.setValue(jogoApp.getMovimentosTotal(), "Movimentos", "Total");
+    }
 
-        JFreeChart chart = ChartFactory.createBarChart(
-                "Estatísticas de Movimentos", // Título
+    /**
+     * Retorna o gráfico de barras com os dados de movimentos.
+     *
+     * @return Instância de JFreeChart.
+     */
+    public JFreeChart getGrafico() {
+        return ChartFactory.createBarChart(
+                "Estatísticas de Movimentos", // Título do gráfico
                 "Tipo de Movimento",         // Eixo X
                 "Quantidade",                // Eixo Y
                 dataset
         );
-
-        chart.getCategoryPlot().getRenderer().setSeriesPaint(0, new Color(57, 110, 255)); // Cor para "Válidos"
-        chart.getCategoryPlot().getRenderer().setSeriesPaint(1, new Color(253, 65, 113)); // Cor para "Inválidos"
-        chart.getCategoryPlot().getRenderer().setSeriesPaint(2, new Color(94,23,235));
-
-        return chart;
     }
 
     /**
-     * Atualiza o gráfico com novos valores.
+     * Atualiza os dados do gráfico.
      *
-     * @param movimentosValidos  número atualizado de movimentos válidos
-     * @param movimentosInvalidos número atualizado de movimentos inválidos
+     * @param movimentosValidos   Número de movimentos válidos.
+     * @param movimentosInvalidos Número de movimentos inválidos.
+     * @param movimentosTotal     Número total de movimentos.
      */
     public void atualizarDados(int movimentosValidos, int movimentosInvalidos, int movimentosTotal) {
-        this.movimentosValidos = movimentosValidos;
-        this.movimentosInvalidos = movimentosInvalidos;
-        this.movimentosTotal = movimentosTotal;
-
-        // Atualiza os dados no dataset
-        dataset.setValue(movimentosValidos, "Movimentos Válidos", "Válidos");
-        dataset.setValue(movimentosInvalidos, "Movimentos Inválidos", "Inválidos");
-        dataset.setValue(movimentosTotal, "Movimento Total", "Total");
-
-        // Redesenha o gráfico
-        this.revalidate();
-        this.repaint();
-    }
-
-    /**
-     * Método para exibir o gráfico.
-     */
-    public void exibir() {
-        SwingUtilities.invokeLater(() -> {
-            System.out.println("Exibindo gráfico...");
-            System.out.println("Movimentos Válidos: " + movimentosValidos +
-                    ", Inválidos: " + movimentosInvalidos + ", Total: " + movimentosTotal);
-            this.setVisible(true);
-        });
+        dataset.setValue(movimentosValidos, "Movimentos", "Válidos");
+        dataset.setValue(movimentosInvalidos, "Movimentos", "Inválidos");
+        dataset.setValue(movimentosTotal, "Movimentos", "Total");
     }
 }

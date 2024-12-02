@@ -5,9 +5,13 @@ import devdeck.model.NoCarta;
 import devdeck.model.home.ListaHome;
 import devdeck.model.home.MonteHome;
 import devdeck.model.home.PilhaHome;
+import devdeck.utils.RecursoImagens;
 import devdeck.utils.charts.GraficoEficiencia;
+import devdeck.utils.charts.GraficoEsforcoTotal;
 import devdeck.utils.charts.GraficoMovimentos;
+import devdeck.utils.charts.GraficoVelocidade;
 import devdeck.utils.component.EfeitoConfetes;
+import devdeck.utils.component.FundoPainel;
 import devdeck.utils.event.CartaEvento;
 
 import javax.swing.*;
@@ -29,7 +33,7 @@ public final class JogoApp {
     public static void main(String[] args) {
         try {
             // Define o visual da interface para o padrão do sistema
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             // Inicia o jogo
             JogoApp.novoJogo();
         } catch (Exception e) {
@@ -45,30 +49,28 @@ public final class JogoApp {
     public static JFrame frame;
     private final CartaEvento cartaEvento;
 
-    private GraficoMovimentos graficoMovimentos;
+    private final GraficoMovimentos graficoMovimentos;
     private int movimentosValidos = 0;
     private int movimentosInvalidos = 0;
     private int movimentosTotal = 0;
 
-    private GraficoEficiencia graficoEficiencia;
+    private final GraficoEficiencia graficoEficiencia;
     private Timer cronometroTimer;
     private int segundosDecorridos;
 
+    private final GraficoVelocidade graficoVelocidade;
+    private final GraficoEsforcoTotal graficoEsforcoTotal;
+
     private final List<Integer> movimentosValidosAoLongoDoTempo = new ArrayList<>();
     private final List<Integer> movimentosInvalidosAoLongoDoTempo = new ArrayList<>();
-    private final List<Integer> tempoAoLongoDoTempo = new ArrayList<>();
+    private final List<Integer> duracaoPartida = new ArrayList<>();
 
-    private int pontuacao = 0; // Pontuação atual do jogador
-    private final int BONUS_FINAL = 100; // Bônus ao completar o jogo
-    private final int PENALIDADE_INVALIDOS = -15; // Penalidade para movimentos inválidos
-    private final int RECOMPENSA_VALIDOS = 20; // Pontos por movimentos válidos
-    private final double BONUS_TEMPO = 0.5; // Multiplicador de tempo (ex.: 0.5 por segundo economizado)
+    private int pontuacao = 0;
 
     /**
      * Inicia um novo jogo, criando uma nova instância do jogo e sua interface gráfica.
      */
     public static void novoJogo() {
-        // Se já existir uma janela de interface, ela será fechada.
         if (JogoApp.frame != null) {
             JogoApp.frame.dispose();
         }
@@ -82,25 +84,20 @@ public final class JogoApp {
     public JogoApp() {
         BARALHO = new Baralho();
 
-        // Inicializa os montes, pilhas e listas
         this.iniciaMonte();
         this.inicializaPilhas();
         this.iniciaListas();
 
-        // Inicializa a interface gráfica
         JogoApp.frame = new JogoGUI(this);
 
-        // Instância de CartaEvento
         cartaEvento = new CartaEvento(frame, this);
-        graficoMovimentos = new GraficoMovimentos(this.getMovimentosValidos(), this.getMovimentosInvalidos(), this.movimentosTotal);
+        graficoMovimentos = new GraficoMovimentos(this);
         graficoEficiencia = new GraficoEficiencia(this);
+        graficoVelocidade = new GraficoVelocidade(this);
+        graficoEsforcoTotal = new GraficoEsforcoTotal(this);
 
-        // Inicia o cronômetro
         this.iniciaCronometro((JogoGUI) JogoApp.frame);
-
-        // Exibe o frame
         JogoApp.frame.setVisible(true);
-
     }
 
     // Métodos getters para acessar as variáveis
@@ -112,12 +109,10 @@ public final class JogoApp {
         return movimentosInvalidosAoLongoDoTempo;
     }
 
-    public List<Integer> getTempoAoLongoDoTempo() {
-        return tempoAoLongoDoTempo;
+    public List<Integer> getDuracaoPartida() {
+        return duracaoPartida;
     }
 
-
-    // Iniciar o cronômetro
     public void iniciaCronometro(JogoGUI jogoGUI) {
         segundosDecorridos = 0;
 
@@ -127,18 +122,16 @@ public final class JogoApp {
             int segundos = segundosDecorridos % 60;
             String tempoFormatado = String.format("%02d:%02d", minutos, segundos);
 
-            // Atualiza o cronômetro na GUI
             jogoGUI.atualizaCronometro(tempoFormatado);
 
             // Armazena os dados para o gráfico
-            tempoAoLongoDoTempo.add(segundosDecorridos);
+            duracaoPartida.add(segundosDecorridos);
             movimentosValidosAoLongoDoTempo.add(movimentosValidos);
             movimentosInvalidosAoLongoDoTempo.add(movimentosInvalidos);
         });
         cronometroTimer.start();
     }
 
-    // Parar o cronômetro, se necessário
     public void paraCronometro() {
         if (cronometroTimer != null) {
             cronometroTimer.stop();
@@ -168,7 +161,7 @@ public final class JogoApp {
      */
     private void iniciaListas() {
         for (int i = 0; i < 5; i++) {
-            ListaHome listaHome = new ListaHome("Lista " + (i + 1), cartaEvento);
+            ListaHome listaHome = new ListaHome("Lista " + (i + 1));
 
             // Insere cartas retiradas do baralho nas listas
             for (int j = 0; j < (i + 1); j++) {
@@ -236,8 +229,8 @@ public final class JogoApp {
         movimentosTotal = movimentosValidos + movimentosInvalidos;
         graficoMovimentos.atualizarDados(movimentosValidos, movimentosInvalidos, movimentosTotal);
 
-        atualizarPontuacao(true); // Incrementa a pontuação por movimento válido
-        ((JogoGUI) frame).atualizaPontuacao(); // Atualiza a pontuação na GUI
+        atualizarPontuacao(true);
+        ((JogoGUI) frame).atualizaPontuacao();
     }
 
     public void incrementarMovimentosInvalidos() {
@@ -245,8 +238,8 @@ public final class JogoApp {
         movimentosTotal = movimentosValidos + movimentosInvalidos;
         graficoMovimentos.atualizarDados(movimentosValidos, movimentosInvalidos, movimentosTotal);
 
-        atualizarPontuacao(false); // Penaliza a pontuação por movimento inválido
-        ((JogoGUI) frame).atualizaPontuacao(); // Atualiza a pontuação na GUI
+        atualizarPontuacao(false);
+        ((JogoGUI) frame).atualizaPontuacao();
     }
 
     public int getMovimentosValidos() {
@@ -261,26 +254,28 @@ public final class JogoApp {
         return movimentosTotal;
     }
 
-    // Calcula a pontuação com base em critérios definidos
     public void atualizarPontuacao(boolean movimentoValido) {
         if (movimentoValido) {
-            pontuacao += RECOMPENSA_VALIDOS;
+            int recompensa = 20;
+            pontuacao += recompensa;
         } else {
-            pontuacao += PENALIDADE_INVALIDOS;
+            int penalidade = -15;
+            pontuacao += penalidade;
         }
     }
 
-    // Bônus final ao concluir o jogo
     public void aplicarBonusFinal() {
-        int tempoEconomizado = 120 - segundosDecorridos; // Exemplo: jogo deve ser completado em 150 segundos
+        int tempoEconomizado = 120 - segundosDecorridos; // Exemplo: jogo deve ser completado em 120 segundos
+        int bonusFinal = 100;
         if (tempoEconomizado > 0) {
-            pontuacao += BONUS_FINAL + (int) (tempoEconomizado * BONUS_TEMPO);
+            // Multiplicador de tempo (ex.: 0.5 por segundo economizado)
+            double bonusTempo = 0.5;
+            pontuacao += bonusFinal + (int) (tempoEconomizado * bonusTempo);
         } else {
-            pontuacao += BONUS_FINAL; // Apenas o bônus final se exceder o tempo
+            pontuacao += bonusFinal; // Apenas o bônus final se exceder o tempo
         }
     }
 
-    // Obter a pontuação atual
     public int getPontuacao() {
         return pontuacao;
     }
@@ -290,7 +285,6 @@ public final class JogoApp {
      * Chama as verificações de fim de jogo nas pilhas.
      */
     public void verificaFimDeJogo() {
-        // Verifica todas as pilhas se estão completas
         boolean todasCompletas = true;
         for (PilhaHome pilha : BASES) {
             if (!pilha.verificarPilhaCompleta()) {
@@ -301,10 +295,7 @@ public final class JogoApp {
 
         if (todasCompletas) {
             aplicarBonusFinal();
-            ((JogoGUI) frame).atualizaPontuacao(); // Atualiza a pontuação após aplicar o bônus
-
-            // Exibe mensagem de parabéns
-            System.out.println("Você completou todas as pilhas! Parabéns!");
+            ((JogoGUI) frame).atualizaPontuacao();
             paraCronometro();
             JOptionPane.showMessageDialog(frame, "Você completou todas as pilhas! Parabéns!");
 
@@ -323,9 +314,23 @@ public final class JogoApp {
             layeredPane.add(confettiPanel, JLayeredPane.POPUP_LAYER); // Colocado acima dos elementos do jogo
             efeitoConfetes.startConfettiEffect();
 
-            // Exibe a tela de estatísticas
+            // Adiciona um pequeno atraso antes de exibir a tela de estatísticas
             SwingUtilities.invokeLater(() -> {
-                TelaEstatisticas telaEstatisticas = new TelaEstatisticas(graficoEficiencia, graficoMovimentos, efeitoConfetes, pontuacao);
+                // Exibe a tela de estatísticas
+                TelaEstatisticas telaEstatisticas = new TelaEstatisticas(
+                        graficoEficiencia,                      // Gráfico de eficiência
+                        graficoMovimentos,                      // Gráfico de movimentos
+                        graficoVelocidade,                      // Gráfico de velocidade
+                        graficoEsforcoTotal,
+                        efeitoConfetes,
+                        pontuacao,                              // Pontuação final
+                        movimentosValidosAoLongoDoTempo,        // Lista de movimentos válidos ao longo do tempo
+                        movimentosInvalidosAoLongoDoTempo,      // Lista de movimentos inválidos ao longo do tempo
+                        duracaoPartida,                         // Lista com duração da partida
+                        movimentosValidos,                      // Total de movimentos válidos
+                        movimentosInvalidos,                    // Total de movimentos inválidos
+                        segundosDecorridos                      // Tempo total decorrido
+                );
                 telaEstatisticas.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosed(java.awt.event.WindowEvent e) {

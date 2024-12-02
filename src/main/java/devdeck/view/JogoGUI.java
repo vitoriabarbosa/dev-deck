@@ -288,9 +288,9 @@ public class JogoGUI extends JFrame {
 
         // Cria o JLayeredPane
         layeredPane = new JLayeredPane();
-        layeredPane.setPreferredSize(screenSize);
-        setContentPane(layeredPane);
+        layeredPane.setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize());
         layeredPane.setLayout(null);
+        setContentPane(layeredPane);
 
         // Adiciona o background na camada mais baixa usando o painel customizado
         Image imagemFundo = RecursoImagens.getBackground("tela-fundo.png", screenSize).getImage();
@@ -313,8 +313,24 @@ public class JogoGUI extends JFrame {
         pontuacaoLabel.setBounds(screenSize.width/2-100, 20, 200, 30); // Posicionado no canto superior esquerdo
         layeredPane.add(pontuacaoLabel, Integer.valueOf(1));
 
+        JButton btnNovoJogo = getJButton(screenSize);
+        layeredPane.add(btnNovoJogo, Integer.valueOf(1)); // Adiciona ao LayeredPane
+
+        layeredPane.revalidate();
+        layeredPane.repaint();
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setResizable(false);
+    }
+
+    private static JButton getJButton(Dimension screenSize) {
+        JButton btnNovoJogo = new JButton("Novo Jogo");
+        btnNovoJogo.setBackground(new Color(231, 231, 231)); // Define o fundo
+        btnNovoJogo.setForeground(new Color(94, 23, 235)); // Define a cor do texto
+        btnNovoJogo.setFont(new Font("Arial", Font.BOLD, 14)); // Define a fonte
+        btnNovoJogo.setFocusPainted(false); // Remove o foco pintado
+        btnNovoJogo.setBounds(screenSize.width / 2 - 150, screenSize.height - 115, 300, 40);
+        btnNovoJogo.addActionListener(e -> JogoApp.novoJogo());
+        return btnNovoJogo;
     }
 
     // Atualizar o cronômetro

@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.Random;
 
 public class EfeitoConfetes extends JPanel {
-    private List<Confetti> confettiList;
-    private Random random;
-    private Timer timer;
+    private final List<Confetti> confettiList;
+    private final Random random;
+    private final Timer timer;
 
     public EfeitoConfetes(Dimension screenSize) {
         this.confettiList = new ArrayList<>();
         this.random = new Random();
         setOpaque(false);
-        setPreferredSize(screenSize); // Define o tamanho correto do painel
+        setPreferredSize(screenSize);
 
         // Timer para animar os confetes
         timer = new Timer(50, e -> {
@@ -40,16 +40,13 @@ public class EfeitoConfetes extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);  // Chama o método da superclasse
+        super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
         // Habilitar suavização
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Limpar a área onde os confetes serão desenhados
-        g2d.clearRect(0, 0, getWidth(), getHeight());
-
-        // Desenha cada confete
+        // Desenha cada confete com transparência
         for (Confetti confetti : confettiList) {
             confetti.draw(g2d);
         }
@@ -83,10 +80,20 @@ public class EfeitoConfetes extends JPanel {
             }
         }
 
-        // Desenha o confete
+        // Desenha o confete com transparência
         public void draw(Graphics2D g2d) {
+            // Configura transparência dos confetes
+            AlphaComposite composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.8f);
+            g2d.setComposite(composite);
+
+            // Cor aleatória
             g2d.setColor(new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)));
+
+            // Desenha confete
             g2d.fillOval(x, y, size, size);
+
+            // Restaura transparência padrão
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
         }
     }
 
