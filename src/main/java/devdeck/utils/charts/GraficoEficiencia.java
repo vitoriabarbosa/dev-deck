@@ -30,7 +30,7 @@ public class GraficoEficiencia {
 
         // Retorna o gráfico criado
         return ChartFactory.createXYLineChart(
-                "Desempenho do Jogador",
+                "Desempenho",
                 "Tempo (s)",
                 "Movimentos",
                 dataset

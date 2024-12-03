@@ -36,7 +36,7 @@ public class GraficoMovimentos {
      */
     public JFreeChart getGrafico() {
         return ChartFactory.createBarChart(
-                "Estatísticas de Movimentos", // Título do gráfico
+                "Movimentos", // Título do gráfico
                 "Tipo de Movimento",         // Eixo X
                 "Quantidade",                // Eixo Y
                 dataset

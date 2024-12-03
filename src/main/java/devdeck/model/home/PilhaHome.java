@@ -14,8 +14,7 @@ import devdeck.view.JogoApp;
  */
 public class PilhaHome extends PilhaCarta implements Home {
 
-    private CartaEvento cartaEvento;
-
+    private final CartaEvento cartaEvento;
 
     /**
      * A base associada a esta pilha de cartas.
@@ -25,7 +24,7 @@ public class PilhaHome extends PilhaCarta implements Home {
     /**
      * Referência ao JogoApp para interagir com o jogo.
      */
-    private JogoApp jogoApp;
+    private final JogoApp jogoApp;
 
     /**
      * Cria uma nova instância de {@code PilhaHome} com um nome definido

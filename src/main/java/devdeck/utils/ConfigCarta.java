@@ -11,17 +11,17 @@ public class ConfigCarta {
     /**
      * Largura padrão das cartas, em pixels.
      */
-    public static final int LARGURA = 150;
+    public static final int LARGURA = 130;
 
     /**
      * Altura padrão das cartas, em pixels.
      */
-    public static final int ALTURA = 200;
+    public static final int ALTURA = 180;
 
     /**
      * Deslocamento horizontal padrão entre as cartas, em pixels.
      */
-    public static final int DESLOCAMENTO_X = 200;
+    public static final int DESLOCAMENTO_X = 180;
 
     /**
      * Deslocamento vertical padrão entre as cartas, em pixels.

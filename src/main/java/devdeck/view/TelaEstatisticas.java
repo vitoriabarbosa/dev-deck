@@ -3,7 +3,6 @@ package devdeck.view;
 import devdeck.utils.charts.*;
 import devdeck.utils.component.EfeitoConfetes;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -58,23 +57,19 @@ public class TelaEstatisticas extends JDialog {
         inicializarLayout();
 
         // Adiciona listener para parar os confetes ao fechar
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosed(java.awt.event.WindowEvent e) {
-                efeitoConfetes.stopConfettiEffect(); // Para o efeito de confetes
-            }
-        });
+        if (efeitoConfetes != null) {
+            addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosed(java.awt.event.WindowEvent e) {
+                    efeitoConfetes.stopConfettiEffect(); // Para o efeito de confetes
+                }
+            });
+        }
     }
 
     private void inicializarLayout() {
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         splitPane.setDividerLocation(750);
-
-        // Padronizar títulos dos gráficos
-        padronizarTituloGrafico(graficoEficiencia.getGrafico(), "Gráfico de Eficiência");
-        padronizarTituloGrafico(graficoMovimentos.getGrafico(), "Gráfico de Movimentos");
-        padronizarTituloGrafico(graficoVelocidade.getGrafico(), "Gráfico de Velocidade");
-        padronizarTituloGrafico(graficoEsforcoTotal.getGrafico(), "Gráfico de Esforço Total");
 
         // Painel com gráficos
         JPanel painelGraficos = new JPanel(new GridLayout(2, 2, 10, 10));
@@ -133,6 +128,12 @@ public class TelaEstatisticas extends JDialog {
                 
                 
                  > Esforço Total (Área):      %.2f
+                 
+                 
+                     O esforço total reflete o trabalho que 
+                 você fez para concluir o jogo. Ele combina
+                 quantos movimentos válidos você fez com a 
+                 consistência ao longo do tempo.
 
                 """,
                 movimentosValidos,
@@ -166,12 +167,5 @@ public class TelaEstatisticas extends JDialog {
             area += 0.5 * (tempoAtual - tempoAnterior) * (progressoAtual + progressoAnterior);
         }
         return area;
-    }
-
-    private void padronizarTituloGrafico(JFreeChart grafico, String titulo) {
-        grafico.setTitle(new org.jfree.chart.title.TextTitle(
-                titulo, // Título do gráfico
-                new Font("SansSerif", Font.BOLD, 14)
-        ));
     }
 }

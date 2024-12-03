@@ -26,23 +26,29 @@ import java.util.Stack;
  * componentes visuais do jogo, como cartas, montes, bases e listas.
  */
 public class JogoGUI extends JFrame {
-    private final JogoApp JOGO;
+    private final JogoApp jogoApp;
     private JLayeredPane layeredPane;
     private static final int PADDING = 100;
 
+    private Stack<NoCarta> ult3Cartas = null;
+    private boolean showingHolder = false;
     public JLabel cartaHolder;
     public JLabel[] visualCartasMonte = new JLabel[3];
+
     public static JLabel warningBg;
     public static JLabel warningBox;
+
     private JLabel cronometroLabel;
     private JLabel pontuacaoLabel;
+
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     /**
      * Cria uma nova instância da interface gráfica do jogo.
      *
-     * @param JOGO A instância do aplicativo do jogo.
+     * @param jogoApp A instância do aplicativo do jogo.
      */
-    public JogoGUI(JogoApp JOGO) {
+    public JogoGUI(JogoApp jogoApp) {
         ArrayList<Image> icons = new ArrayList<Image>();
         this.setIconImages(icons);
 
@@ -51,7 +57,7 @@ public class JogoGUI extends JFrame {
         initComponents();
         this.iniciaWarningBox();
 
-        this.JOGO = JOGO;
+        this.jogoApp = jogoApp;
         this.iniciaJogo();
     }
 
@@ -157,14 +163,11 @@ public class JogoGUI extends JFrame {
         warningBox.setVisible(false);
     }
 
-    private Stack<NoCarta> ult3Cartas = null;
-    private boolean showingHolder = false;
-
     /**
      * Exibe as três próximas cartas do monte na interface.
      */
     public void abre3Cartas() {
-        MonteHome monteHome = this.JOGO.getMonteHome();
+        MonteHome monteHome = this.jogoApp.getMonteHome();
 
         // Esconde as 3 cartas anteriores e remove-as do painel
         if (ult3Cartas != null) {
@@ -183,7 +186,6 @@ public class JogoGUI extends JFrame {
             }
 
             int baralhoX = ConfigCarta.DESLOCAMENTO_X + PADDING;
-            int baralhoY = PADDING;
             ult3Cartas = monteHome.retira3Cartas();
             if (ult3Cartas != null) {
                 int numCartas = ult3Cartas.size();
@@ -191,10 +193,10 @@ public class JogoGUI extends JFrame {
                     NoCarta carta = ult3Cartas.get(i);
                     carta.setOpen(true);
                     carta.setVisible(true);
-                    carta.setLocation(baralhoX + (i * 40), baralhoY);
+                    carta.setLocation(baralhoX + (i * 40), PADDING);
                     carta.setSize(ConfigCarta.LARGURA, ConfigCarta.ALTURA);
                     carta.setDraggable(i == numCartas - 1);
-                    carta.addMouseListener(new CartaEvento(this, this.JOGO));
+                    carta.addMouseListener(new CartaEvento(this, this.jogoApp));
                     layeredPane.add(carta, Integer.valueOf(2 + i));
                 }
             }
@@ -227,13 +229,10 @@ public class JogoGUI extends JFrame {
      * Inicializa as pilhas de bases na interface.
      */
     private void iniciaBases() {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
         int baseX = screenSize.width - ConfigCarta.LARGURA - PADDING;
-        int baseY = PADDING;
 
-        for (PilhaHome pilha : this.JOGO.getBASES()) {
-            PilhaBase pilhaBase = new PilhaBase(baseX, baseY, pilha);
+        for (PilhaHome pilha : this.jogoApp.getBASES()) {
+            PilhaBase pilhaBase = new PilhaBase(baseX, PADDING, pilha);
             pilha.setBase(pilhaBase);
             pilhaBase.setSize(ConfigCarta.LARGURA, ConfigCarta.ALTURA);
             layeredPane.add(pilhaBase, Integer.valueOf(1));
@@ -246,15 +245,13 @@ public class JogoGUI extends JFrame {
      * Inicializa as listas de cartas na interface.
      */
     private void iniciaListas() {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
-        int numListas = this.JOGO.getLISTAS().length;
+        int numListas = this.jogoApp.getLISTAS().length;
         int totalListaWidth = ConfigCarta.LARGURA * numListas + (ConfigCarta.DESLOCAMENTO_X / 2) * (numListas - 1);
 
         int cartaX = (screenSize.width - totalListaWidth) / 2;
         int cartaY = screenSize.height / 3 + PADDING;
 
-        for (ListaHome lista : this.JOGO.getLISTAS()) {
+        for (ListaHome lista : this.jogoApp.getLISTAS()) {
             ListaBase listaBase = new ListaBase(cartaX, cartaY, lista);
             lista.setBase(listaBase);
             listaBase.setSize(ConfigCarta.LARGURA, ConfigCarta.ALTURA);
@@ -266,12 +263,11 @@ public class JogoGUI extends JFrame {
                 if (carta != null) {
                     carta.setLocation(cartaX, cartaY);
                     carta.setSize(ConfigCarta.LARGURA, ConfigCarta.ALTURA);
-                    carta.addMouseListener(new CartaEvento(this, this.JOGO));
+                    carta.addMouseListener(new CartaEvento(this, this.jogoApp));
                     layeredPane.add(carta, Integer.valueOf(2 + j));
                     cartaY += ConfigCarta.DESLOCAMENTO_Y;
                 }
             }
-
             cartaX += ConfigCarta.LARGURA + (ConfigCarta.DESLOCAMENTO_X / 2);
             cartaY = screenSize.height / 3 + PADDING;
         }
@@ -283,8 +279,7 @@ public class JogoGUI extends JFrame {
      */
     private void initComponents() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Paciência - DevDeck");
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        setTitle("Solitaire Game - Dev Deck");
 
         // Cria o JLayeredPane
         layeredPane = new JLayeredPane();
@@ -306,30 +301,31 @@ public class JogoGUI extends JFrame {
         cronometroLabel.setBounds(screenSize.width-400, 20, 300, 30);
         layeredPane.add(cronometroLabel, Integer.valueOf(1));
 
+        // Configurar pontuação
         pontuacaoLabel = new JLabel("Pontuação: 0");
         pontuacaoLabel.setFont(new Font("Arial", Font.BOLD, 18));
         pontuacaoLabel.setForeground(Color.WHITE);
         pontuacaoLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        pontuacaoLabel.setBounds(screenSize.width/2-100, 20, 200, 30); // Posicionado no canto superior esquerdo
+        pontuacaoLabel.setBounds(screenSize.width/2-100, 20, 200, 30);
         layeredPane.add(pontuacaoLabel, Integer.valueOf(1));
 
         JButton btnNovoJogo = getJButton(screenSize);
-        layeredPane.add(btnNovoJogo, Integer.valueOf(1)); // Adiciona ao LayeredPane
-
-        layeredPane.revalidate();
-        layeredPane.repaint();
+        layeredPane.add(btnNovoJogo, Integer.valueOf(1));
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setResizable(false);
     }
 
-    private static JButton getJButton(Dimension screenSize) {
+    private JButton getJButton(Dimension screenSize) {
         JButton btnNovoJogo = new JButton("Novo Jogo");
-        btnNovoJogo.setBackground(new Color(231, 231, 231)); // Define o fundo
-        btnNovoJogo.setForeground(new Color(94, 23, 235)); // Define a cor do texto
-        btnNovoJogo.setFont(new Font("Arial", Font.BOLD, 14)); // Define a fonte
-        btnNovoJogo.setFocusPainted(false); // Remove o foco pintado
+        btnNovoJogo.setBackground(new Color(231, 231, 231));
+        btnNovoJogo.setForeground(new Color(94, 23, 235));
+        btnNovoJogo.setFont(new Font("Arial", Font.BOLD, 14));
+        btnNovoJogo.setFocusPainted(false);
         btnNovoJogo.setBounds(screenSize.width / 2 - 150, screenSize.height - 115, 300, 40);
-        btnNovoJogo.addActionListener(e -> JogoApp.novoJogo());
+        btnNovoJogo.addActionListener(e -> {
+            dispose();  // Fechando a tela atual
+            new JogoApp();  // Reiniciando o jogo
+        });
         return btnNovoJogo;
     }
 
@@ -340,6 +336,6 @@ public class JogoGUI extends JFrame {
 
     // Atualizar pontuação em tempo real
     public void atualizaPontuacao() {
-        pontuacaoLabel.setText("Pontuação: " + JOGO.getPontuacao());
+        pontuacaoLabel.setText("Pontuação: " + jogoApp.getPontuacao());
     }
 }

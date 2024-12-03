@@ -58,7 +58,7 @@ public class GraficoEsforcoTotal {
 
         // Cria o gráfico de linhas
         return ChartFactory.createXYLineChart(
-                "Esforço Total ao Longo do Tempo",
+                "Esforço Total",
                 "Tempo (s)",
                 "Área Acumulada",
                 dataset

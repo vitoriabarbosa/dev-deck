@@ -115,6 +115,7 @@ public final class JogoApp {
 
     public void iniciaCronometro(JogoGUI jogoGUI) {
         segundosDecorridos = 0;
+        final int LIMITE_TEMPO_SEGUNDOS = 5 * 60; // 5 minutos
 
         cronometroTimer = new Timer(1000, e -> {
             segundosDecorridos++;
@@ -123,6 +124,15 @@ public final class JogoApp {
             String tempoFormatado = String.format("%02d:%02d", minutos, segundos);
 
             jogoGUI.atualizaCronometro(tempoFormatado);
+
+            // Verifica se o limite de tempo foi atingido
+            if (segundosDecorridos >= LIMITE_TEMPO_SEGUNDOS) {
+                paraCronometro();
+                JOptionPane.showMessageDialog(frame, "O tempo acabou! Melhor sorte na próxima vez.");
+                // Fecha a janela principal do jogo
+                frame.dispose();
+                System.exit(0);
+            }
 
             // Armazena os dados para o gráfico
             duracaoPartida.add(segundosDecorridos);
@@ -297,50 +307,77 @@ public final class JogoApp {
             aplicarBonusFinal();
             ((JogoGUI) frame).atualizaPontuacao();
             paraCronometro();
-            JOptionPane.showMessageDialog(frame, "Você completou todas as pilhas! Parabéns!");
 
-            // Inicia o efeito de confetes diretamente no frame principal
+            // Inicia o efeito de confetes
             Dimension screenSize = frame.getSize();
             EfeitoConfetes efeitoConfetes = new EfeitoConfetes(screenSize);
 
-            // Painel de confetes transparente sobre a tela do jogo
             JPanel confettiPanel = new JPanel(new BorderLayout());
-            confettiPanel.setOpaque(false); // Transparente para manter a visibilidade do jogo
+            confettiPanel.setOpaque(false);
             confettiPanel.setBounds(0, 0, screenSize.width, screenSize.height);
             confettiPanel.add(efeitoConfetes, BorderLayout.CENTER);
 
-            // Adiciona o painel de confetes ao frame
             JLayeredPane layeredPane = frame.getLayeredPane();
-            layeredPane.add(confettiPanel, JLayeredPane.POPUP_LAYER); // Colocado acima dos elementos do jogo
+            layeredPane.add(confettiPanel, JLayeredPane.POPUP_LAYER);
             efeitoConfetes.startConfettiEffect();
 
-            // Adiciona um pequeno atraso antes de exibir a tela de estatísticas
-            SwingUtilities.invokeLater(() -> {
-                // Exibe a tela de estatísticas
-                TelaEstatisticas telaEstatisticas = new TelaEstatisticas(
-                        graficoEficiencia,                      // Gráfico de eficiência
-                        graficoMovimentos,                      // Gráfico de movimentos
-                        graficoVelocidade,                      // Gráfico de velocidade
-                        graficoEsforcoTotal,
-                        efeitoConfetes,
-                        pontuacao,                              // Pontuação final
-                        movimentosValidosAoLongoDoTempo,        // Lista de movimentos válidos ao longo do tempo
-                        movimentosInvalidosAoLongoDoTempo,      // Lista de movimentos inválidos ao longo do tempo
-                        duracaoPartida,                         // Lista com duração da partida
-                        movimentosValidos,                      // Total de movimentos válidos
-                        movimentosInvalidos,                    // Total de movimentos inválidos
-                        segundosDecorridos                      // Tempo total decorrido
-                );
-                telaEstatisticas.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosed(java.awt.event.WindowEvent e) {
-                        efeitoConfetes.stopConfettiEffect(); // Para os confetes
-                        layeredPane.remove(confettiPanel);  // Remove o painel de confetes
-                        layeredPane.repaint();
-                    }
-                });
-                telaEstatisticas.setVisible(true);
+            JDialog dialogParabens = new JDialog(frame, "Parabéns!", true);
+            dialogParabens.setUndecorated(true);
+            dialogParabens.setSize(600, 400);
+            dialogParabens.setLocationRelativeTo(frame);
+
+            ImageIcon imagemParabens = RecursoImagens.getBackground("parabens.png", new Dimension(600, 400));
+            FundoPainel painelParabens = new FundoPainel(imagemParabens.getImage());
+            painelParabens.setLayout(new BorderLayout());
+
+            // Botão "Continuar"
+            JButton btnContinuar = new JButton("Continuar");
+            btnContinuar.setFont(new Font("Arial", Font.BOLD, 16));
+            btnContinuar.setPreferredSize(new Dimension(300, 40));
+            btnContinuar.setForeground(new Color(46,27,91,255));
+            btnContinuar.setBackground(new Color(231, 231, 231));
+            btnContinuar.setFocusPainted(false);
+            btnContinuar.addActionListener(e -> {
+                dialogParabens.dispose();
+                exibirEstatisticas(efeitoConfetes, layeredPane, confettiPanel);
             });
+
+            painelParabens.add(btnContinuar, BorderLayout.SOUTH);
+            dialogParabens.add(painelParabens);
+            dialogParabens.setVisible(true);
         }
     }
+
+    // Adiciona um pequeno atraso antes de exibir a tela de estatísticas
+    private void exibirEstatisticas(EfeitoConfetes efeitoConfetes, JLayeredPane layeredPane, JPanel confettiPanel) {
+        SwingUtilities.invokeLater(() -> {
+            TelaEstatisticas telaEstatisticas = new TelaEstatisticas(
+                    graficoEficiencia,
+                    graficoMovimentos,
+                    graficoVelocidade,
+                    graficoEsforcoTotal,
+                    efeitoConfetes, // Reutilizando o mesmo efeito de confetes
+                    pontuacao,
+                    movimentosValidosAoLongoDoTempo,
+                    movimentosInvalidosAoLongoDoTempo,
+                    duracaoPartida,
+                    movimentosValidos,
+                    movimentosInvalidos,
+                    segundosDecorridos
+            );
+            telaEstatisticas.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosed(java.awt.event.WindowEvent e) {
+                    efeitoConfetes.stopConfettiEffect();
+                    layeredPane.remove(confettiPanel);
+                    layeredPane.repaint();
+
+                    frame.dispose();
+                    System.exit(0);
+                }
+            });
+            telaEstatisticas.setVisible(true);
+        });
+    }
+
 }
