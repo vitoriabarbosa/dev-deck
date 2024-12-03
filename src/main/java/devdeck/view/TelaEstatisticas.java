@@ -1,5 +1,6 @@
 package devdeck.view;
 
+import devdeck.utils.ConfigPadrao;
 import devdeck.utils.charts.*;
 import devdeck.utils.component.EfeitoConfetes;
 import org.jfree.chart.ChartPanel;
@@ -21,6 +22,9 @@ public class TelaEstatisticas extends JDialog {
     private final int movimentosValidos;
     private final int movimentosInvalidos;
     private final int tempoFinal;
+
+    static final int TELA_WIDTH = (int) (ConfigPadrao.TAMANHO_TELA.width * 0.7);
+    static final int TELA_HEIGTH = (int) (ConfigPadrao.TAMANHO_TELA.height * 0.6);
 
     public TelaEstatisticas(
             GraficoEficiencia graficoEficiencia,
@@ -49,7 +53,7 @@ public class TelaEstatisticas extends JDialog {
         this.tempoFinal = tempoFinal;
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(1200, 700);
+        setSize(TELA_WIDTH, TELA_HEIGTH);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         getContentPane().setBackground(new Color(240, 240, 240, 29));
@@ -69,7 +73,7 @@ public class TelaEstatisticas extends JDialog {
 
     private void inicializarLayout() {
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setDividerLocation(750);
+        splitPane.setDividerLocation(ConfigPadrao.TAMANHO_TELA.width / 2 - 130);
 
         // Painel com gráficos
         JPanel painelGraficos = new JPanel(new GridLayout(2, 2, 10, 10));
@@ -128,7 +132,6 @@ public class TelaEstatisticas extends JDialog {
                 
                 
                  > Esforço Total (Área):      %.2f
-                 
                  
                      O esforço total reflete o trabalho que 
                  você fez para concluir o jogo. Ele combina

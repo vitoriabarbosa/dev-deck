@@ -5,6 +5,7 @@ import devdeck.model.NoCarta;
 import devdeck.model.home.ListaHome;
 import devdeck.model.home.MonteHome;
 import devdeck.model.home.PilhaHome;
+import devdeck.utils.ConfigPadrao;
 import devdeck.utils.RecursoImagens;
 import devdeck.utils.charts.GraficoEficiencia;
 import devdeck.utils.charts.GraficoEsforcoTotal;
@@ -16,6 +17,8 @@ import devdeck.utils.event.CartaEvento;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,12 +45,12 @@ public final class JogoApp {
         }
     }
 
-    private final Baralho BARALHO;
-    private final PilhaHome[] BASES = new PilhaHome[4];
-    private final ListaHome[] LISTAS = new ListaHome[5];
+    private static final Baralho BARALHO = new Baralho();
+    private static final PilhaHome[] BASES = new PilhaHome[4];
+    private static final ListaHome[] LISTAS = new ListaHome[5];
+    private final CartaEvento cartaEvento;
     private MonteHome monteHome;
     public static JFrame frame;
-    private final CartaEvento cartaEvento;
 
     private final GraficoMovimentos graficoMovimentos;
     private int movimentosValidos = 0;
@@ -82,21 +85,20 @@ public final class JogoApp {
      * Inicializa o baralho, as bases, as listas, os montes e a interface gráfica.
      */
     public JogoApp() {
-        BARALHO = new Baralho();
-
+        new Baralho();
         this.iniciaMonte();
         this.inicializaPilhas();
         this.iniciaListas();
 
-        JogoApp.frame = new JogoGUI(this);
-
+        JogoApp.frame = new JogoInterface(this);
         cartaEvento = new CartaEvento(frame, this);
+
         graficoMovimentos = new GraficoMovimentos(this);
         graficoEficiencia = new GraficoEficiencia(this);
         graficoVelocidade = new GraficoVelocidade(this);
         graficoEsforcoTotal = new GraficoEsforcoTotal(this);
 
-        this.iniciaCronometro((JogoGUI) JogoApp.frame);
+        this.iniciaCronometro((JogoInterface) JogoApp.frame);
         JogoApp.frame.setVisible(true);
     }
 
@@ -113,7 +115,7 @@ public final class JogoApp {
         return duracaoPartida;
     }
 
-    public void iniciaCronometro(JogoGUI jogoGUI) {
+    public void iniciaCronometro(JogoInterface jogoGUI) {
         segundosDecorridos = 0;
         final int LIMITE_TEMPO_SEGUNDOS = 5 * 60; // 5 minutos
 
@@ -154,7 +156,7 @@ public final class JogoApp {
     public void iniciaMonte() {
         this.monteHome = new MonteHome(cartaEvento);
         for (int j = 0; j < 13; j++) {
-            NoCarta carta = this.BARALHO.retiraCartaTopo();
+            NoCarta carta = BARALHO.retiraCartaTopo();
             monteHome.inserir(carta);
         }
     }
@@ -162,7 +164,7 @@ public final class JogoApp {
     private void inicializaPilhas() {
         for (int i = 0; i < 4; i++) {
             PilhaHome pilha = new PilhaHome("Pilha " + (i + 1), this, cartaEvento);
-            this.BASES[i] = pilha;
+            BASES[i] = pilha;
         }
     }
 
@@ -175,11 +177,11 @@ public final class JogoApp {
 
             // Insere cartas retiradas do baralho nas listas
             for (int j = 0; j < (i + 1); j++) {
-                NoCarta noCarta = this.BARALHO.retiraCartaTopo();
+                NoCarta noCarta = BARALHO.retiraCartaTopo();
                 noCarta.setHome(listaHome);
                 listaHome.inserir(noCarta);
             }
-            this.LISTAS[i] = listaHome;
+            LISTAS[i] = listaHome;
         }
     }
 
@@ -204,7 +206,7 @@ public final class JogoApp {
      * @return Um array de {@link ListaHome} contendo as listas do jogo.
      */
     public ListaHome[] getLISTAS() {
-        return this.LISTAS;
+        return LISTAS;
     }
 
     /**
@@ -222,7 +224,7 @@ public final class JogoApp {
      * @return Um array de {@link PilhaHome} contendo as pilhas-base.
      */
     public PilhaHome[] getBASES() {
-        return this.BASES;
+        return BASES;
     }
 
     /**
@@ -231,7 +233,7 @@ public final class JogoApp {
      * @return O {@link Baralho} do jogo.
      */
     public Baralho getBARALHO() {
-        return this.BARALHO;
+        return BARALHO;
     }
 
     public void incrementarMovimentosValidos() {
@@ -240,7 +242,7 @@ public final class JogoApp {
         graficoMovimentos.atualizarDados(movimentosValidos, movimentosInvalidos, movimentosTotal);
 
         atualizarPontuacao(true);
-        ((JogoGUI) frame).atualizaPontuacao();
+        ((JogoInterface) frame).atualizaPontuacao();
     }
 
     public void incrementarMovimentosInvalidos() {
@@ -249,7 +251,7 @@ public final class JogoApp {
         graficoMovimentos.atualizarDados(movimentosValidos, movimentosInvalidos, movimentosTotal);
 
         atualizarPontuacao(false);
-        ((JogoGUI) frame).atualizaPontuacao();
+        ((JogoInterface) frame).atualizaPontuacao();
     }
 
     public int getMovimentosValidos() {
@@ -305,32 +307,33 @@ public final class JogoApp {
 
         if (todasCompletas) {
             aplicarBonusFinal();
-            ((JogoGUI) frame).atualizaPontuacao();
+            ((JogoInterface) frame).atualizaPontuacao();
             paraCronometro();
 
             // Inicia o efeito de confetes
-            Dimension screenSize = frame.getSize();
-            EfeitoConfetes efeitoConfetes = new EfeitoConfetes(screenSize);
+            EfeitoConfetes efeitoConfetes = new EfeitoConfetes(ConfigPadrao.TAMANHO_TELA);
 
-            JPanel confettiPanel = new JPanel(new BorderLayout());
-            confettiPanel.setOpaque(false);
-            confettiPanel.setBounds(0, 0, screenSize.width, screenSize.height);
-            confettiPanel.add(efeitoConfetes, BorderLayout.CENTER);
+            JPanel confetePanel = new JPanel(new BorderLayout());
+            confetePanel.setOpaque(false);
+            confetePanel.setBounds(0, 0, ConfigPadrao.TAMANHO_TELA.width, ConfigPadrao.TAMANHO_TELA.height);
+            confetePanel.add(efeitoConfetes, BorderLayout.CENTER);
 
             JLayeredPane layeredPane = frame.getLayeredPane();
-            layeredPane.add(confettiPanel, JLayeredPane.POPUP_LAYER);
+            layeredPane.add(confetePanel, JLayeredPane.POPUP_LAYER);
             efeitoConfetes.startConfettiEffect();
+
+            final int telaWidth = (int) (ConfigPadrao.TAMANHO_TELA.width * 0.4);
+            final int telaHeigth = (int) (ConfigPadrao.TAMANHO_TELA.height * 0.4);
 
             JDialog dialogParabens = new JDialog(frame, "Parabéns!", true);
             dialogParabens.setUndecorated(true);
-            dialogParabens.setSize(600, 400);
+            dialogParabens.setSize(telaWidth, telaHeigth);
             dialogParabens.setLocationRelativeTo(frame);
 
-            ImageIcon imagemParabens = RecursoImagens.getBackground("parabens.png", new Dimension(600, 400));
+            ImageIcon imagemParabens = RecursoImagens.getBackground("parabens.png", new Dimension(telaWidth, telaHeigth));
             FundoPainel painelParabens = new FundoPainel(imagemParabens.getImage());
             painelParabens.setLayout(new BorderLayout());
 
-            // Botão "Continuar"
             JButton btnContinuar = new JButton("Continuar");
             btnContinuar.setFont(new Font("Arial", Font.BOLD, 16));
             btnContinuar.setPreferredSize(new Dimension(300, 40));
@@ -339,7 +342,7 @@ public final class JogoApp {
             btnContinuar.setFocusPainted(false);
             btnContinuar.addActionListener(e -> {
                 dialogParabens.dispose();
-                exibirEstatisticas(efeitoConfetes, layeredPane, confettiPanel);
+                exibirEstatisticas(efeitoConfetes, layeredPane, confetePanel);
             });
 
             painelParabens.add(btnContinuar, BorderLayout.SOUTH);
@@ -349,7 +352,7 @@ public final class JogoApp {
     }
 
     // Adiciona um pequeno atraso antes de exibir a tela de estatísticas
-    private void exibirEstatisticas(EfeitoConfetes efeitoConfetes, JLayeredPane layeredPane, JPanel confettiPanel) {
+    private void exibirEstatisticas(EfeitoConfetes efeitoConfetes, JLayeredPane layeredPane, JPanel confetePanel) {
         SwingUtilities.invokeLater(() -> {
             TelaEstatisticas telaEstatisticas = new TelaEstatisticas(
                     graficoEficiencia,
@@ -365,11 +368,11 @@ public final class JogoApp {
                     movimentosInvalidos,
                     segundosDecorridos
             );
-            telaEstatisticas.addWindowListener(new java.awt.event.WindowAdapter() {
+            telaEstatisticas.addWindowListener(new WindowAdapter() {
                 @Override
-                public void windowClosed(java.awt.event.WindowEvent e) {
+                public void windowClosed(WindowEvent e) {
                     efeitoConfetes.stopConfettiEffect();
-                    layeredPane.remove(confettiPanel);
+                    layeredPane.remove(confetePanel);
                     layeredPane.repaint();
 
                     frame.dispose();
@@ -379,5 +382,4 @@ public final class JogoApp {
             telaEstatisticas.setVisible(true);
         });
     }
-
 }

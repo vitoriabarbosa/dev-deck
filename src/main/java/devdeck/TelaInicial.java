@@ -1,5 +1,6 @@
 package devdeck;
 
+import devdeck.utils.ConfigPadrao;
 import devdeck.utils.RecursoImagens;
 import devdeck.utils.component.FundoPainel;
 import devdeck.view.JogoApp;
@@ -8,28 +9,27 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Classe que representa a tela inicial (splash screen) do sistema de gerenciamento de supermercado.
+ * Classe que representa a tela inicial (splash screen) do jogo.
  * Esta tela é exibida por um curto período antes de redirecionar para a tela do jogo.
  */
-public class InicialFrame extends JFrame {
+public class TelaInicial extends JFrame {
 
     /**
      * Construtor da classe {@code InicialFrame}.
      * Configura a tela inicial, define seu tamanho, título e o fundo da tela.
      * O fundo é carregado a partir de um recurso de imagem.
      */
-    public InicialFrame() {
-        setSize(1300, 800);
-        setLocationRelativeTo(null);
-        setTitle("Welcome To DevDeck!");
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    public TelaInicial() {
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setSize(ConfigPadrao.TAMANHO_TELA.width, ConfigPadrao.TAMANHO_TELA.height);
+        setTitle("Welcome To Dev Deck!");
 
-        Image imagemFundo = RecursoImagens.getBackground("tela-inicial.png", screenSize).getImage();
-        FundoPainel backgroundPanel = new FundoPainel(imagemFundo);
+        Image imagemFundo = RecursoImagens.getBackground("tela-inicial.png", ConfigPadrao.TAMANHO_TELA).getImage();
+        FundoPainel fundoPainel = new FundoPainel(imagemFundo);
 
-        JPanel content = new JPanel(new BorderLayout());
-        content.add(backgroundPanel, BorderLayout.CENTER);
-        add(content);
+        JPanel painel = new JPanel(new BorderLayout());
+        painel.add(fundoPainel, BorderLayout.CENTER);
+        add(painel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
@@ -42,8 +42,8 @@ public class InicialFrame extends JFrame {
      */
     public static void main(String[] args) {
         // Cria a Splash Screen
-        InicialFrame initialFrame = new InicialFrame();
-        initialFrame.setVisible(true);
+        TelaInicial telaInicial = new TelaInicial();
+        telaInicial.setVisible(true);
 
         // Mantém a splash screen visível por 10 segundos
         try {
@@ -52,13 +52,10 @@ public class InicialFrame extends JFrame {
             e.printStackTrace();
         }
 
-        // Fecha a splash screen
-        initialFrame.setVisible(false);
-        initialFrame.dispose();
-
         // Cria e mostra a tela do jogo
         SwingUtilities.invokeLater(() -> {
             JogoApp.main(new String[0]);
+            telaInicial.setVisible(false);
         });
     }
 }

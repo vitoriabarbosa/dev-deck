@@ -1,6 +1,6 @@
 package devdeck.model;
 
-import devdeck.utils.ConfigCarta;
+import devdeck.utils.ConfigPadrao;
 import devdeck.utils.GeradorAleatorio;
 
 import javax.swing.*;
@@ -48,7 +48,7 @@ public class Baralho {
     public final static ImageIcon cartaFechada = new ImageIcon(
             new ImageIcon(Baralho.class.getResource("/cartas/fundo.png"))
                     .getImage()
-                    .getScaledInstance(ConfigCarta.LARGURA, ConfigCarta.ALTURA, Image.SCALE_SMOOTH)
+                    .getScaledInstance(ConfigPadrao.LARGURA_CARTA, ConfigPadrao.ALTURA_CARTA, Image.SCALE_SMOOTH)
     );
 
     /**

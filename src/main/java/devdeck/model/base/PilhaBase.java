@@ -1,7 +1,7 @@
 package devdeck.model.base;
 
 import devdeck.model.home.PilhaHome;
-import devdeck.utils.ConfigCarta;
+import devdeck.utils.ConfigPadrao;
 import devdeck.utils.RecursoImagens;
 
 import java.awt.*;
@@ -31,7 +31,7 @@ final public class PilhaBase extends Base {
         this.x = x;
         this.y = y;
         this.setIcon(RecursoImagens.getCarta("borda-completa.png"));
-        this.setBounds(0, 0, ConfigCarta.LARGURA, ConfigCarta.ALTURA);
+        this.setBounds(0, 0, ConfigPadrao.LARGURA_CARTA, ConfigPadrao.ALTURA_CARTA);
         this.setLocation(this.x, this.y);
         this.home = home;
     }

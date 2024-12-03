@@ -6,7 +6,7 @@ import devdeck.model.base.PilhaBase;
 import devdeck.model.home.ListaHome;
 import devdeck.model.home.MonteHome;
 import devdeck.model.home.PilhaHome;
-import devdeck.utils.ConfigCarta;
+import devdeck.utils.ConfigPadrao;
 import devdeck.utils.component.FundoPainel;
 import devdeck.utils.component.JogoPainel;
 import devdeck.utils.event.CartaEvento;
@@ -25,10 +25,9 @@ import java.util.Stack;
  * Esta classe é responsável por gerenciar a exibição e as interações com os
  * componentes visuais do jogo, como cartas, montes, bases e listas.
  */
-public class JogoGUI extends JFrame {
+public class JogoInterface extends JFrame {
     private final JogoApp jogoApp;
     private JLayeredPane layeredPane;
-    private static final int PADDING = 100;
 
     private Stack<NoCarta> ult3Cartas = null;
     private boolean showingHolder = false;
@@ -41,14 +40,12 @@ public class JogoGUI extends JFrame {
     private JLabel cronometroLabel;
     private JLabel pontuacaoLabel;
 
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
     /**
      * Cria uma nova instância da interface gráfica do jogo.
      *
      * @param jogoApp A instância do aplicativo do jogo.
      */
-    public JogoGUI(JogoApp jogoApp) {
+    public JogoInterface(JogoApp jogoApp) {
         ArrayList<Image> icons = new ArrayList<Image>();
         this.setIconImages(icons);
 
@@ -75,14 +72,14 @@ public class JogoGUI extends JFrame {
      * Configura a posição e eventos associados às cartas do monte.
      */
     public void iniciaBaralho() {
-        int barX = PADDING;
-        int barY = PADDING;
+        int barX = ConfigPadrao.PADDING;
+        int barY = ConfigPadrao.PADDING;
 
         for (int i = 0; i < 3; i++) {
             JLabel carta = new JLabel(RecursoImagens.getCarta("fundo.png"));
             visualCartasMonte[i] = carta;
 
-            carta.setBounds(0, 0, ConfigCarta.LARGURA, ConfigCarta.ALTURA);
+            carta.setBounds(0, 0, ConfigPadrao.LARGURA_CARTA, ConfigPadrao.ALTURA_CARTA);
             carta.setLocation(barX, barY);
             layeredPane.add(carta, JLayeredPane.PALETTE_LAYER);
             layeredPane.setComponentZOrder(carta, 0);
@@ -98,8 +95,8 @@ public class JogoGUI extends JFrame {
 
         // Adiciona a carta "vazia"
         cartaHolder = new JLabel(RecursoImagens.getCarta("carta-vazia.png"));
-        cartaHolder.setBounds(0, 0, ConfigCarta.LARGURA, ConfigCarta.ALTURA);
-        cartaHolder.setLocation(PADDING, PADDING);
+        cartaHolder.setBounds(0, 0, ConfigPadrao.LARGURA_CARTA, ConfigPadrao.ALTURA_CARTA);
+        cartaHolder.setLocation(ConfigPadrao.PADDING, ConfigPadrao.PADDING);
         cartaHolder.addMouseListener(new MonteEvento(this));
         cartaHolder.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         layeredPane.add(cartaHolder, Integer.valueOf(2));
@@ -110,9 +107,11 @@ public class JogoGUI extends JFrame {
      * A caixa de aviso pode ser clicada para ocultá-la.
      */
     private void iniciaWarningBox() {
-        warningBg = new JLabel(RecursoImagens.getUi("caixa.png", 300, 100));
-        warningBg.setBounds(0, 0, 300, 100);
-        warningBg.setLocation(PADDING, PADDING * 8);
+        int boxWidth = 300;
+        int boxHeight = 100;
+        warningBg = new JLabel(RecursoImagens.getUi("caixa.png", boxWidth, boxHeight));
+        warningBg.setBounds(0, 0, boxWidth, boxHeight);
+        warningBg.setLocation(ConfigPadrao.PADDING, ConfigPadrao.TAMANHO_TELA.height - 250);
 
         warningBox = new JLabel();
         warningBox.setForeground(Color.black);
@@ -130,7 +129,7 @@ public class JogoGUI extends JFrame {
 
             @Override
             public void mousePressed(MouseEvent me) {
-                JogoGUI.hideWarning();
+                JogoInterface.hideWarning();
             }
 
             @Override
@@ -185,7 +184,7 @@ public class JogoGUI extends JFrame {
                 this.hideHolder();
             }
 
-            int baralhoX = ConfigCarta.DESLOCAMENTO_X + PADDING;
+            int baralhoX = ConfigPadrao.DESLOCAMENTO_X + ConfigPadrao.PADDING + 30;
             ult3Cartas = monteHome.retira3Cartas();
             if (ult3Cartas != null) {
                 int numCartas = ult3Cartas.size();
@@ -193,8 +192,8 @@ public class JogoGUI extends JFrame {
                     NoCarta carta = ult3Cartas.get(i);
                     carta.setOpen(true);
                     carta.setVisible(true);
-                    carta.setLocation(baralhoX + (i * 40), PADDING);
-                    carta.setSize(ConfigCarta.LARGURA, ConfigCarta.ALTURA);
+                    carta.setLocation(baralhoX + (i * 40), ConfigPadrao.PADDING);
+                    carta.setSize(ConfigPadrao.LARGURA_CARTA, ConfigPadrao.ALTURA_CARTA);
                     carta.setDraggable(i == numCartas - 1);
                     carta.addMouseListener(new CartaEvento(this, this.jogoApp));
                     layeredPane.add(carta, Integer.valueOf(2 + i));
@@ -229,15 +228,15 @@ public class JogoGUI extends JFrame {
      * Inicializa as pilhas de bases na interface.
      */
     private void iniciaBases() {
-        int baseX = screenSize.width - ConfigCarta.LARGURA - PADDING;
+        int baseX = ConfigPadrao.TAMANHO_TELA.width - ConfigPadrao.LARGURA_CARTA - ConfigPadrao.PADDING;
 
         for (PilhaHome pilha : this.jogoApp.getBASES()) {
-            PilhaBase pilhaBase = new PilhaBase(baseX, PADDING, pilha);
+            PilhaBase pilhaBase = new PilhaBase(baseX, ConfigPadrao.PADDING, pilha);
             pilha.setBase(pilhaBase);
-            pilhaBase.setSize(ConfigCarta.LARGURA, ConfigCarta.ALTURA);
+            pilhaBase.setSize(ConfigPadrao.LARGURA_CARTA, ConfigPadrao.ALTURA_CARTA);
             layeredPane.add(pilhaBase, Integer.valueOf(1));
 
-            baseX -= (ConfigCarta.LARGURA + PADDING);
+            baseX -= ConfigPadrao.LARGURA_CARTA + (ConfigPadrao.PADDING / 4);
         }
     }
 
@@ -246,15 +245,15 @@ public class JogoGUI extends JFrame {
      */
     private void iniciaListas() {
         int numListas = this.jogoApp.getLISTAS().length;
-        int totalListaWidth = ConfigCarta.LARGURA * numListas + (ConfigCarta.DESLOCAMENTO_X / 2) * (numListas - 1);
+        int totalListaWidth = ConfigPadrao.LARGURA_CARTA * numListas + (ConfigPadrao.DESLOCAMENTO_X / 2) * (numListas - 1);
 
-        int cartaX = (screenSize.width - totalListaWidth) / 2;
-        int cartaY = screenSize.height / 3 + PADDING;
+        int cartaX = (ConfigPadrao.TAMANHO_TELA.width - totalListaWidth) / 2;
+        int cartaY = (ConfigPadrao.TAMANHO_TELA.height / 4) + ConfigPadrao.PADDING;
 
         for (ListaHome lista : this.jogoApp.getLISTAS()) {
             ListaBase listaBase = new ListaBase(cartaX, cartaY, lista);
             lista.setBase(listaBase);
-            listaBase.setSize(ConfigCarta.LARGURA, ConfigCarta.ALTURA);
+            listaBase.setSize(ConfigPadrao.LARGURA_CARTA, ConfigPadrao.ALTURA_CARTA);
             layeredPane.add(listaBase, Integer.valueOf(1));
 
             // Adiciona as cartas da lista
@@ -262,14 +261,14 @@ public class JogoGUI extends JFrame {
                 NoCarta carta = lista.recuperaNo(j + 1);
                 if (carta != null) {
                     carta.setLocation(cartaX, cartaY);
-                    carta.setSize(ConfigCarta.LARGURA, ConfigCarta.ALTURA);
+                    carta.setSize(ConfigPadrao.LARGURA_CARTA, ConfigPadrao.ALTURA_CARTA);
                     carta.addMouseListener(new CartaEvento(this, this.jogoApp));
                     layeredPane.add(carta, Integer.valueOf(2 + j));
-                    cartaY += ConfigCarta.DESLOCAMENTO_Y;
+                    cartaY += ConfigPadrao.DESLOCAMENTO_Y;
                 }
             }
-            cartaX += ConfigCarta.LARGURA + (ConfigCarta.DESLOCAMENTO_X / 2);
-            cartaY = screenSize.height / 3 + PADDING;
+            cartaX += ConfigPadrao.LARGURA_CARTA + (ConfigPadrao.DESLOCAMENTO_X / 2);
+            cartaY = (ConfigPadrao.TAMANHO_TELA.height / 4) + ConfigPadrao.PADDING;
         }
     }
 
@@ -288,17 +287,17 @@ public class JogoGUI extends JFrame {
         setContentPane(layeredPane);
 
         // Adiciona o background na camada mais baixa usando o painel customizado
-        Image imagemFundo = RecursoImagens.getBackground("tela-fundo.png", screenSize).getImage();
+        Image imagemFundo = RecursoImagens.getBackground("tela-fundo.png", ConfigPadrao.TAMANHO_TELA).getImage();
         FundoPainel backgroundPanel = new FundoPainel(imagemFundo);
-        backgroundPanel.setBounds(0, 0, screenSize.width, screenSize.height-60);
+        backgroundPanel.setBounds(0, 0, ConfigPadrao.TAMANHO_TELA.width, ConfigPadrao.TAMANHO_TELA.height-60);
         layeredPane.add(backgroundPanel, Integer.valueOf(0));
 
         // Configurar cronômetro
         cronometroLabel = new JLabel("Tempo da Partida: 00:00");
         cronometroLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        cronometroLabel.setForeground(Color.WHITE);
+        cronometroLabel.setForeground(new Color(255, 255, 255));
         cronometroLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        cronometroLabel.setBounds(screenSize.width-400, 20, 300, 30);
+        cronometroLabel.setBounds(ConfigPadrao.TAMANHO_TELA.width - 450, 20, 300, 30);
         layeredPane.add(cronometroLabel, Integer.valueOf(1));
 
         // Configurar pontuação
@@ -306,25 +305,25 @@ public class JogoGUI extends JFrame {
         pontuacaoLabel.setFont(new Font("Arial", Font.BOLD, 18));
         pontuacaoLabel.setForeground(Color.WHITE);
         pontuacaoLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        pontuacaoLabel.setBounds(screenSize.width/2-100, 20, 200, 30);
+        pontuacaoLabel.setBounds((ConfigPadrao.TAMANHO_TELA.width / 2) - 100, 20, 200, 30);
         layeredPane.add(pontuacaoLabel, Integer.valueOf(1));
 
-        JButton btnNovoJogo = getJButton(screenSize);
+        JButton btnNovoJogo = getJButton();
         layeredPane.add(btnNovoJogo, Integer.valueOf(1));
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setResizable(false);
     }
 
-    private JButton getJButton(Dimension screenSize) {
+    private JButton getJButton() {
         JButton btnNovoJogo = new JButton("Novo Jogo");
         btnNovoJogo.setBackground(new Color(231, 231, 231));
         btnNovoJogo.setForeground(new Color(94, 23, 235));
         btnNovoJogo.setFont(new Font("Arial", Font.BOLD, 14));
         btnNovoJogo.setFocusPainted(false);
-        btnNovoJogo.setBounds(screenSize.width / 2 - 150, screenSize.height - 115, 300, 40);
+        btnNovoJogo.setBounds((ConfigPadrao.TAMANHO_TELA.width / 2) - 150, ConfigPadrao.TAMANHO_TELA.height - 115, 300, 40);
         btnNovoJogo.addActionListener(e -> {
-            dispose();  // Fechando a tela atual
-            new JogoApp();  // Reiniciando o jogo
+            dispose(); // Fechando a tela atual
+            new JogoApp(); // Reiniciando o jogo
         });
         return btnNovoJogo;
     }

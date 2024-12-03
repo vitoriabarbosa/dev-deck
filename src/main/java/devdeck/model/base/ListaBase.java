@@ -1,7 +1,7 @@
 package devdeck.model.base;
 
 import devdeck.model.home.ListaHome;
-import devdeck.utils.ConfigCarta;
+import devdeck.utils.ConfigPadrao;
 import devdeck.utils.RecursoImagens;
 
 import java.awt.*;
@@ -30,7 +30,7 @@ public class ListaBase extends Base {
         this.x = x;
         this.y = y;
         this.setIcon(RecursoImagens.getCarta("borda-metade.png"));
-        this.setBounds(0, 0, ConfigCarta.LARGURA, ConfigCarta.ALTURA);
+        this.setBounds(0, 0, ConfigPadrao.LARGURA_CARTA, ConfigPadrao.ALTURA_CARTA);
         this.setLocation(this.x, this.y);
         this.home = home;
     }
@@ -45,7 +45,7 @@ public class ListaBase extends Base {
     public Point getNextCardPoint() {
         int nextY = this.getBaseY();
         if (this.home.contarNos() > 0) {
-            nextY += (ConfigCarta.DESLOCAMENTO_Y * this.home.contarNos() + 1);
+            nextY += (ConfigPadrao.DESLOCAMENTO_Y * this.home.contarNos() + 1);
         }
         return new Point(this.getBaseX(), nextY);
     }

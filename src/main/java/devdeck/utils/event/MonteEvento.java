@@ -1,6 +1,6 @@
 package devdeck.utils.event;
 
-import devdeck.view.JogoGUI;
+import devdeck.view.JogoInterface;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
@@ -14,14 +14,14 @@ import java.awt.event.MouseMotionListener;
  * movimento do mouse sobre o monte.
  */
 public class MonteEvento extends JFrame implements MouseListener, MouseMotionListener {
-    private JogoGUI jogoGUI;
+    private JogoInterface jogoGUI;
 
     /**
      * Constrói uma nova instância de {@code MonteEvento}.
      *
      * @param jogoGUI a interface gráfica do jogo usada para interagir com o monte
      */
-    public MonteEvento(JogoGUI jogoGUI) {
+    public MonteEvento(JogoInterface jogoGUI) {
         this.jogoGUI = jogoGUI;
     }
 

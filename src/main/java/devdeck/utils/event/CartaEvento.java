@@ -6,10 +6,10 @@ import devdeck.model.base.Base;
 import devdeck.model.home.Home;
 import devdeck.model.home.MonteHome;
 import devdeck.model.home.PilhaHome;
-import devdeck.utils.ConfigCarta;
+import devdeck.utils.ConfigPadrao;
 import devdeck.utils.charts.GraficoMovimentos;
 import devdeck.view.JogoApp;
-import devdeck.view.JogoGUI;
+import devdeck.view.JogoInterface;
 
 import javax.swing.*;
 import java.awt.*;
@@ -72,7 +72,7 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
         cartaOriginalLocation = carta.getLocation();
         primeiroClique = me.getPoint();
         carta.addMouseMotionListener(this);
-        JogoGUI.hideWarning();
+        JogoInterface.hideWarning();
     }
 
     @Override
@@ -93,7 +93,7 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
 
                 // coloca as cartas no lugar
                 this.setNoCartaLocation(carta, nextCardPoint);
-                JogoGUI.hideWarning();
+                JogoInterface.hideWarning();
 
                 // incrementar e atualizar o gráfico para movimentos válidos
                 jogoApp.incrementarMovimentosValidos();
@@ -109,7 +109,7 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
             this.setNoCartaLocation(carta, cartaOriginalLocation);
 
             if (ex.getCode() != MovimentosInvalidos.GENERICO) {
-                JogoGUI.showWarning("<html>" + ex.getMessage());
+                JogoInterface.showWarning("<html>" + ex.getMessage());
 
                 // incrementar e atualizar o gráfico para movimentos inválidos
                 jogoApp.incrementarMovimentosInvalidos();
@@ -142,7 +142,7 @@ public class CartaEvento extends JFrame implements MouseListener, MouseMotionLis
                 this.PAINEL.setComponentZOrder(aux, totalProx - i);
             }
 
-            locationY += ConfigCarta.DESLOCAMENTO_Y; // Ajusta o deslocamento vertical
+            locationY += ConfigPadrao.DESLOCAMENTO_Y; // Ajusta o deslocamento vertical
             aux = aux.getProx(); // Vai para a próxima carta
             i++;
         }

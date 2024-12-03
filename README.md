@@ -74,7 +74,7 @@ Software util:
 
       No terminal, execute:
       ```bash
-       mvn compile exec:java -Dexec.mainClass="devdeck.InicialFrame"
+       mvn compile exec:java -Dexec.mainClass="devdeck.TelaInicial"
       ```
 
 ## 🤝 Equipe

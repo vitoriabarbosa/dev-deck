@@ -48,7 +48,7 @@ public class RecursoImagens {
      */
     public static ImageIcon getCarta(String nomeArquivo) {
         String caminho = "cartas/" + nomeArquivo;
-        return getImageIcon(caminho, ConfigCarta.LARGURA, ConfigCarta.ALTURA);
+        return getImageIcon(caminho, ConfigPadrao.LARGURA_CARTA, ConfigPadrao.ALTURA_CARTA);
     }
 
     /**

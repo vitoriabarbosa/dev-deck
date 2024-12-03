@@ -1,7 +1,7 @@
 package devdeck.model;
 
 import devdeck.model.home.Home;
-import devdeck.utils.ConfigCarta;
+import devdeck.utils.ConfigPadrao;
 import devdeck.utils.RecursoImagens;
 
 import javax.swing.*;
@@ -57,7 +57,7 @@ final public class NoCarta extends JLabel {
     public NoCarta(int numero, Naipe naipe) {
         this.numero = numero;
         this.naipe = naipe;
-        this.setBounds(0, 0, ConfigCarta.LARGURA, ConfigCarta.ALTURA);
+        this.setBounds(0, 0, ConfigPadrao.LARGURA_CARTA, ConfigPadrao.ALTURA_CARTA);
         this.openedIcon = RecursoImagens.getCarta(this.getNumRep().toLowerCase() + "-" + this.getNaipeRep() + ".png");
         this.setOpen(false);
     }
