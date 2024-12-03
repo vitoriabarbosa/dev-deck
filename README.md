@@ -1,17 +1,24 @@
 # 🎮 DEV DECK  🃏
+![GitHub repo size](https://img.shields.io/github/repo-size/vitoriabarbosa/dev-deck?style=for-the-badge)
+![GitHub language count](https://img.shields.io/github/languages/count/vitoriabarbosa/dev-deck?style=for-the-badge)
+![GitHub forks](https://img.shields.io/github/forks/vitoriabarbosa/dev-deck?style=for-the-badge)
+![Bitbucket open issues](https://img.shields.io/bitbucket/issues/vitoriabarbosa/dev-deck?style=for-the-badge)
+![Bitbucket open pull requests](https://img.shields.io/github/issues-pr-closed/vitoriabarbosa/dev-deck?style=for-the-badge)
 
 ## 🕹 Seja bem-vindo(a) ao game! 🥳
-_Dev Deck, um jogo de dev pra dev!_ 🧑‍💻
+**Dev Deck**, um jogo de dev pra dev! 🧑‍💻
 
 ## 💡 Como Jogar
 ### Objetivo: 
-O objetivo do jogo é organizar todas as cartas de cada naipe (Java, Python, C, C++) em ordem crescente, começando do Ás até o 7, dentro de seus respectivos conjuntos (sem alternar cores).
+O objetivo do jogo é organizar todas as cartas de cada naipe (**Java**, **Python**, **C**, **C++**) em ordem crescente, começando do Ás até o 7, dentro de seus respectivos conjuntos (sem alternar cores).
 
-### Naipes:
-   - Java (cor da carta: Vermelha)
-   - Python (cor da carta: Amarelo)
-   - C (cor da carta: Cinza)
-   - C++ (cor da carta: Azul)
+
+### Naipes e Cores:
+* Java (cor da carta: Vermelha)
+* Python (cor da carta: Amarela)
+* C (cor da carta: Cinza)
+* C++ (cor da carta: Azul)
+
 
 ### Regras:
 1. **Montagem**: As cartas devem ser organizadas em sequência crescente dentro do mesmo naipe. Exemplo: Ás de Java, seguido do 2 de Java, e assim por diante até o 7 de Java. O mesmo vale para os outros naipes.<br><br>
@@ -21,22 +28,29 @@ O objetivo do jogo é organizar todas as cartas de cada naipe (Java, Python, C, 
 
 
 ## 🔢 Assuntos Envolvidos (Matemática)
-### Teoria dos Conjuntos: 
-A organização das cartas por naipe (Java, Python, C, C++) e a sequência de valores pode ser vista como uma aplicação da teoria de conjuntos. Cada naipe forma um conjunto de elementos, e o jogador precisa organizar as cartas de forma que cada subconjunto (ou sequência) siga uma ordem crescente específica.
 
-### Permutação e Combinação: 
-A maneira como as cartas são distribuídas inicialmente envolve permutações, pois as cartas podem ser rearranjadas em várias ordens. Durante o jogo, o jogador também lida com a combinação de cartas ao movê-las entre as pilhas.
+### 📚 Matemática Discreta
+* `Teoria dos Conjuntos`: Organização das cartas por naipe.
+* `Permutação` e `Combinação`: Movimentos e redistribuição.
+* `Lógica Booleana`: Regras de movimentação.
+* `Teoria dos Grafos`: Representação de conexões possíveis.
 
-### Lógica Booleana: 
-O processo de tomada de decisões ao mover cartas pode ser modelado por lógica booleana, onde o jogador precisa verificar condições específicas (como se a carta que está movendo é a próxima na sequência e se está no mesmo naipe).
+### 📚 Cálculo 1
+* `Funções`: Regras e mecânicas.
+* `Desigualdades`: Validação de movimentos.
+* `Limites`, `Derivadas` e `Integrais`: Estatísticas do jogador.
 
-### Teoria dos Grafos: 
-O jogo pode ser representado como um grafo, onde cada carta ou pilha é um nó, e as conexões entre as cartas (possibilidades de movimento) formam as arestas. O jogador precisa "navegar" por esse grafo de maneira eficiente para encontrar a solução.
+
+## ✨ Novidades e Melhorias
+* **Efeitos Visuais**: Novas animações para maior imersão.
+* **Tela de Estatísticas**: Gráficos detalhados do desempenho.
+* **Gráficos Dinâmicos**: Representação visual usando JFreeChart.
 
 
 ## 🛠️ Implementação
 - **Linguagem de Programação:** Java
 - **Interface Gráfica:** Swing
+- **Bibliotecas:** JFreeChart
 - **Gerente de Dependência:** Maven
 - **Controle de Versão:** Git
 - **Protótipo do Design:** Figma e Canva
@@ -49,7 +63,7 @@ Antes de começar, você vai precisar ter instalado em sua máquina as seguintes
 - [Maven](https://maven.apache.org/)
 - [Git](https://git-scm.com/)
 
-Software util:
+Software útil:
 - [IntelliJ IDEA](https://www.jetbrains.com/idea/download/) ou uma IDE de sua preferência
 
 ### Instalação
@@ -81,22 +95,6 @@ Software util:
 <table>
    <tr>
       <td align="center">
-          <a href="https://github.com/carlosklg" title="Github de Carlos Candido">
-            <img src="https://avatars.githubusercontent.com/u/139086058?v=4" width="100px;" alt="foto"/><br>
-            <sub>
-              <b>Carlos Candido</b>
-            </sub>
-          </a>
-      </td>
-      <td align="center">
-          <a href="https://github.com/Caze-69" title="Github de Carlos Eduardo">
-            <img src="https://avatars.githubusercontent.com/u/176598075?v=4" width="100px;" alt="foto"/><br>
-            <sub>
-              <b>Carlos Eduardo</b>
-            </sub>
-          </a>
-      </td>
-      <td align="center">
           <a href="https://github.com/vitoriabarbosa" title="Github de Vitória">
             <img src="https://avatars.githubusercontent.com/u/93888309?v=4" width="100px;" alt="foto"/><br>
             <sub>
@@ -117,6 +115,22 @@ Software util:
             <img src="https://avatars.githubusercontent.com/u/136641821?v=4" width="100px;" alt="foto"/><br>
             <sub>
               <b>Ycaru Nunes</b>
+            </sub>
+          </a>
+      </td>
+      <td align="center">
+          <a href="https://github.com/carlosklg" title="Github de Carlos Candido">
+            <img src="https://avatars.githubusercontent.com/u/139086058?v=4" width="100px;" alt="foto"/><br>
+            <sub>
+              <b>Carlos Candido</b>
+            </sub>
+          </a>
+      </td>
+      <td align="center">
+          <a href="https://github.com/Caze-69" title="Github de Carlos Eduardo">
+            <img src="https://avatars.githubusercontent.com/u/176598075?v=4" width="100px;" alt="foto"/><br>
+            <sub>
+              <b>Carlos Eduardo</b>
             </sub>
           </a>
       </td>
