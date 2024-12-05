@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 /**
- * A classe JogoGUI representa a interface gráfica de um jogo de paciência.
+ * A classe {@code JogoInterface} representa a interface gráfica de um jogo de paciência.
  * Esta classe é responsável por gerenciar a exibição e as interações com os
  * componentes visuais do jogo, como cartas, montes, bases e listas.
  */

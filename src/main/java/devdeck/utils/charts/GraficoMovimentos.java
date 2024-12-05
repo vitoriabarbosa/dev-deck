@@ -5,14 +5,18 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.DefaultCategoryDataset;
 
+/**
+ * Classe responsável por criar um gráfico de barras representando os movimentos
+ * (válidos, inválidos e total) de um jogo.
+ */
 public class GraficoMovimentos {
     private final DefaultCategoryDataset dataset;
     private final JogoApp jogoApp;
 
     /**
-     * Construtor que inicializa o gráfico com os dados de movimentos.
+     * Construtor que inicializa o gráfico com os dados de movimentos extraídos do jogo.
      *
-     * @param jogoApp Instância de JogoApp para acessar os dados do jogo.
+     * @param jogoApp Instância de {@link JogoApp} para acessar os dados do jogo.
      */
     public GraficoMovimentos(JogoApp jogoApp) {
         this.jogoApp = jogoApp;
@@ -21,7 +25,7 @@ public class GraficoMovimentos {
     }
 
     /**
-     * Inicializa o conjunto de dados do gráfico.
+     * Inicializa o conjunto de dados para o gráfico com base nos dados do jogo.
      */
     private void inicializarDados() {
         dataset.setValue(jogoApp.getMovimentosValidos(), "Movimentos", "Válidos");
@@ -31,20 +35,21 @@ public class GraficoMovimentos {
 
     /**
      * Retorna o gráfico de barras com os dados de movimentos.
+     * O gráfico apresenta três categorias: movimentos válidos, inválidos e total.
      *
-     * @return Instância de JFreeChart.
+     * @return Instância de {@link JFreeChart} representando o gráfico de barras.
      */
     public JFreeChart getGrafico() {
         return ChartFactory.createBarChart(
-                "Movimentos", // Título do gráfico
-                "Tipo de Movimento",         // Eixo X
-                "Quantidade",                // Eixo Y
-                dataset
+                "Movimentos",   // Título do gráfico
+                "Tipo de Movimento",   // Rótulo do eixo X
+                "Quantidade",          // Rótulo do eixo Y
+                dataset                // Conjunto de dados
         );
     }
 
     /**
-     * Atualiza os dados do gráfico.
+     * Atualiza os dados do gráfico com novos valores para movimentos válidos, inválidos e total.
      *
      * @param movimentosValidos   Número de movimentos válidos.
      * @param movimentosInvalidos Número de movimentos inválidos.

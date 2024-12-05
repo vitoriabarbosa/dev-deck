@@ -9,16 +9,14 @@
 **Dev Deck**, um jogo de dev pra dev! 🧑‍💻
 
 ## 💡 Como Jogar
-### Objetivo: 
-O objetivo do jogo é organizar todas as cartas de cada naipe (**Java**, **Python**, **C**, **C++**) em ordem crescente, começando do Ás até o 7, dentro de seus respectivos conjuntos (sem alternar cores).
-
+### Objetivo:
+O objetivo do jogo é organizar todas as cartas de cada naipe (Java, Python, C, C++) em ordem crescente, começando do Ás até o 7, dentro de seus respectivos conjuntos (sem alternar cores).
 
 ### Naipes e Cores:
 * Java (cor da carta: Vermelha)
 * Python (cor da carta: Amarela)
 * C (cor da carta: Cinza)
 * C++ (cor da carta: Azul)
-
 
 ### Regras:
 1. **Montagem**: As cartas devem ser organizadas em sequência crescente dentro do mesmo naipe. Exemplo: Ás de Java, seguido do 2 de Java, e assim por diante até o 7 de Java. O mesmo vale para os outros naipes.<br><br>
@@ -29,32 +27,51 @@ O objetivo do jogo é organizar todas as cartas de cada naipe (**Java**, **Pytho
 
 ## 🔢 Assuntos Envolvidos (Matemática)
 
-### 📚 Matemática Discreta
-* `Teoria dos Conjuntos`: Organização das cartas por naipe.
-* `Permutação` e `Combinação`: Movimentos e redistribuição.
-* `Lógica Booleana`: Regras de movimentação.
-* `Teoria dos Grafos`: Representação de conexões possíveis.
+* ## 📚 Matemática Discreta
+  ### Teoria dos Conjuntos:
+  A organização das cartas por naipe e a sequência de valores pode ser vista como uma aplicação da teoria de conjuntos. Cada naipe forma um conjunto de elementos, e o jogador precisa organizar as cartas em sequência seguindo uma ordem crescente específica.
+  
+  ### Permutação e Combinação:
+  A maneira como as cartas são distribuídas inicialmente envolve permutações, pois as cartas podem ser rearranjadas em várias ordens. Durante o jogo, o jogador também lida com a combinação de cartas ao movê-las entre as pilhas.
+  
+  ### Lógica Booleana:
+  O processo de tomada de decisões ao mover cartas pode ser modelado por lógica booleana, onde o jogador precisa verificar condições específicas (como se a carta que está movendo é a próxima na sequência e se está no mesmo naipe).
+  
+  ### Teoria dos Grafos:
+  O jogo pode ser representado como um grafo, onde cada carta ou pilha é um nó, e as conexões entre as cartas (possibilidades de movimento) formam as arestas. O jogador precisa "navegar" por esse grafo de maneira eficiente para encontrar a solução.
 
-### 📚 Cálculo 1
-* `Funções`: Regras e mecânicas.
-* `Desigualdades`: Validação de movimentos.
-* `Limites`, `Derivadas` e `Integrais`: Estatísticas do jogador.
 
+* ## 📚 Cálculo 1
+  ### Funções
+  As funções ajudam a modelar as regras e mecânicas do jogo, como pontuações e movimentos permitidos. São usadas para representar o progresso do jogador e calcular resultados baseados em suas ações, como o número de cartas corretamente organizadas.
+  
+  ### Desigualdades
+  Desigualdades aparecem nas condições para movimentação das cartas. Elas ajudam a verificar se um movimento é válido, como garantir que a carta movida segue a sequência correta dentro de seu naipe.
+  
+  ### Limites
+  Limites podem ser usados para analisar o desempenho do jogador ao longo da partida, calculando a eficiência dentro do tempo limite do jogo.
+  
+  ### Derivadas
+  As derivadas medem as mudanças no jogo em tempo real, como a variação na pontuação e a eficiência do jogador em movimentar cartas por segundo.
+  
+  ### Integrais
+  Integrais ajudam a acumular informações, como a pontuação total obtida ao longo da partida e o número total de movimentos realizados. Essa soma é usada para gerar estatísticas finais.
+  <br><br>
 
 ## ✨ Novidades e Melhorias
 * **Efeitos Visuais**: Novas animações para maior imersão.
-* **Tela de Estatísticas**: Gráficos detalhados do desempenho.
+* **Tela de Estatísticas**: Sistema de pontuação e gráficos detalhados do desempenho do jogador.
 * **Gráficos Dinâmicos**: Representação visual usando JFreeChart.
 
 
 ## 🛠️ Implementação
 - **Linguagem de Programação:** Java
 - **Interface Gráfica:** Swing
-- **Bibliotecas:** JFreeChart
+- **Biblioteca:** JFreeChart
 - **Gerente de Dependência:** Maven
 - **Controle de Versão:** Git
 - **Protótipo do Design:** Figma e Canva
-
+  <br><br>
 
 ## 🚀 Começando
 ### Pré-requisitos
@@ -63,7 +80,7 @@ Antes de começar, você vai precisar ter instalado em sua máquina as seguintes
 - [Maven](https://maven.apache.org/)
 - [Git](https://git-scm.com/)
 
-Software útil:
+Software util:
 - [IntelliJ IDEA](https://www.jetbrains.com/idea/download/) ou uma IDE de sua preferência
 
 ### Instalação
@@ -76,20 +93,21 @@ Software útil:
    cd ~/dev-deck
 
 3. #### Instalar o JDK 17 ou Superior.
-   - Verifique se você tem o JDK 17 ou superior instalado.
+    - Verifique se você tem o JDK 17 ou superior instalado.
 
 4. #### Instalar o Maven:
-   - Instale o Maven a partir do site oficial.
-   - Adicione o Maven ao seu PATH conforme as instruções de instalação do site.
+    - Instale o Maven a partir do site oficial.
+    - Adicione o Maven ao seu PATH conforme as instruções de instalação do site.
 
 5. #### Compilar e Executar a Aplicação Principal:
-   - Compilar e executar a aplicação principal.
-   - Certifique-se de que todas as dependências estão no classpath.
-
+    - Compilar e executar a aplicação principal.
+    - Certifique-se de que todas as dependências estão no classpath.
+      
       No terminal, execute:
-      ```bash
-       mvn compile exec:java -Dexec.mainClass="devdeck.TelaInicial"
-      ```
+       ```bash
+        mvn compile exec:java -Dexec.mainClass="devdeck.TelaInicial"
+       ```
+<br><br>
 
 ## 🤝 Equipe
 <table>

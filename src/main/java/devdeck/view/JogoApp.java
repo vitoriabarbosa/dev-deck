@@ -5,7 +5,6 @@ import devdeck.model.NoCarta;
 import devdeck.model.home.ListaHome;
 import devdeck.model.home.MonteHome;
 import devdeck.model.home.PilhaHome;
-import devdeck.utils.ConfigPadrao;
 import devdeck.utils.RecursoImagens;
 import devdeck.utils.charts.GraficoEficiencia;
 import devdeck.utils.charts.GraficoEsforcoTotal;
@@ -17,27 +16,43 @@ import devdeck.utils.event.CartaEvento;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A classe {@code JogoApp} é responsável por gerenciar a lógica principal do jogo de paciência,
- * incluindo a inicialização do baralho, as listas, montes, pilhas-base e a interface gráfica.
- * Também contém métodos para validar regras do jogo e verificar o estado de término do jogo.
+ * A classe {@code JogoApp} é responsável por gerenciar a lógica principal do jogo de paciência.
+ * Ela inclui a inicialização do baralho, listas de cartas, montes, pilhas-base, a interface gráfica
+ * e a validação das regras do jogo. Também gerencia o estado de término da partida e a pontuação do jogador.
+ *
+ * <p>Principais funcionalidades:
+ * <ul>
+ *     <li>Inicia e gerencia os componentes do jogo.</li>
+ *     <li>Controla o cronômetro e gráficos de desempenho.</li>
+ *     <li>Valida as regras de movimentação das cartas.</li>
+ *     <li>Calcula e atualiza a pontuação do jogador.</li>
+ *     <li>Verifica condições de término do jogo.</li>
+ * </ul>
+ *
+ * <p>Esta classe utiliza diversas classes auxiliares para implementar funcionalidades como gráficos,
+ * animações e manipulação de eventos de cartas.</p>
+ *
+ * @see devdeck.model.Baralho
+ * @see devdeck.model.home.ListaHome
+ * @see devdeck.model.home.MonteHome
+ * @see devdeck.model.home.PilhaHome
+ * @see devdeck.utils.charts.GraficoMovimentos
+ * @see devdeck.utils.charts.GraficoEficiencia
+ * @see devdeck.utils.component.EfeitoConfetes
  */
+
 public final class JogoApp {
     /**
-     * O método principal que inicializa a aplicação do jogo.
+     * Método principal do aplicativo, responsável por iniciar o jogo.
      *
-     * @param args Os argumentos da linha de comando.
+     * @param args Argumentos da linha de comando.
      */
     public static void main(String[] args) {
         try {
-            // Define o visual da interface para o padrão do sistema
-//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            // Inicia o jogo
             JogoApp.novoJogo();
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,12 +60,12 @@ public final class JogoApp {
         }
     }
 
-    private static final Baralho BARALHO = new Baralho();
-    private static final PilhaHome[] BASES = new PilhaHome[4];
-    private static final ListaHome[] LISTAS = new ListaHome[5];
-    private final CartaEvento cartaEvento;
+    private final Baralho BARALHO;
+    private final PilhaHome[] BASES = new PilhaHome[4];
+    private final ListaHome[] LISTAS = new ListaHome[5];
     private MonteHome monteHome;
     public static JFrame frame;
+    private final CartaEvento cartaEvento;
 
     private final GraficoMovimentos graficoMovimentos;
     private int movimentosValidos = 0;
@@ -81,11 +96,11 @@ public final class JogoApp {
     }
 
     /**
-     * Construtor privado da classe {@code JogoApp}.
-     * Inicializa o baralho, as bases, as listas, os montes e a interface gráfica.
+     * Construtor da classe {@code JogoApp}.
+     * Inicializa os componentes principais do jogo, incluindo o baralho, listas, montes e interface gráfica.
      */
     public JogoApp() {
-        new Baralho();
+        BARALHO = new Baralho();
         this.iniciaMonte();
         this.inicializaPilhas();
         this.iniciaListas();
@@ -115,7 +130,52 @@ public final class JogoApp {
         return duracaoPartida;
     }
 
-    public void iniciaCronometro(JogoInterface jogoGUI) {
+    // Métodos de inicialização
+
+    /**
+     * Inicializa o monte de cartas, transferindo 13 cartas do baralho para o monte.
+     */
+    public void iniciaMonte() {
+        this.monteHome = new MonteHome(cartaEvento);
+        for (int j = 0; j < 13; j++) {
+            NoCarta carta = this.BARALHO.retiraCartaTopo();
+            monteHome.inserir(carta);
+        }
+    }
+
+    /**
+     * Inicializa as pilhas-base onde as cartas serão organizadas por naipe.
+     */
+    private void inicializaPilhas() {
+        for (int i = 0; i < 4; i++) {
+            PilhaHome pilha = new PilhaHome("Pilha " + (i + 1), this, cartaEvento);
+            this.BASES[i] = pilha;
+        }
+    }
+
+    /**
+     * Inicializa as listas de cartas, preenchendo-as com números crescentes de cartas.
+     */
+    private void iniciaListas() {
+        for (int i = 0; i < 5; i++) {
+            ListaHome listaHome = new ListaHome("Lista " + (i + 1));
+
+            // Insere cartas retiradas do baralho nas listas
+            for (int j = 0; j < (i + 1); j++) {
+                NoCarta noCarta = this.BARALHO.retiraCartaTopo();
+                noCarta.setHome(listaHome);
+                listaHome.inserir(noCarta);
+            }
+            this.LISTAS[i] = listaHome;
+        }
+    }
+
+    /**
+     * Inicia o cronômetro do jogo, atualizando o tempo decorrido e verificando o limite de tempo.
+     *
+     * @param jogoInterface A interface gráfica principal do jogo.
+     */
+    public void iniciaCronometro(JogoInterface jogoInterface) {
         segundosDecorridos = 0;
         final int LIMITE_TEMPO_SEGUNDOS = 5 * 60; // 5 minutos
 
@@ -125,7 +185,7 @@ public final class JogoApp {
             int segundos = segundosDecorridos % 60;
             String tempoFormatado = String.format("%02d:%02d", minutos, segundos);
 
-            jogoGUI.atualizaCronometro(tempoFormatado);
+            jogoInterface.atualizaCronometro(tempoFormatado);
 
             // Verifica se o limite de tempo foi atingido
             if (segundosDecorridos >= LIMITE_TEMPO_SEGUNDOS) {
@@ -150,48 +210,14 @@ public final class JogoApp {
         }
     }
 
-    /**
-     * Inicia o monte de cartas, separando as 13 cartas do monte inicial.
-     */
-    public void iniciaMonte() {
-        this.monteHome = new MonteHome(cartaEvento);
-        for (int j = 0; j < 13; j++) {
-            NoCarta carta = BARALHO.retiraCartaTopo();
-            monteHome.inserir(carta);
-        }
-    }
-
-    private void inicializaPilhas() {
-        for (int i = 0; i < 4; i++) {
-            PilhaHome pilha = new PilhaHome("Pilha " + (i + 1), this, cartaEvento);
-            BASES[i] = pilha;
-        }
-    }
+    // Métodos utilitários e de controle do jogo
 
     /**
-     * Inicia as listas de cartas. As listas são preenchidas com um número crescente de cartas, de 1 a 5.
-     */
-    private void iniciaListas() {
-        for (int i = 0; i < 5; i++) {
-            ListaHome listaHome = new ListaHome("Lista " + (i + 1));
-
-            // Insere cartas retiradas do baralho nas listas
-            for (int j = 0; j < (i + 1); j++) {
-                NoCarta noCarta = BARALHO.retiraCartaTopo();
-                noCarta.setHome(listaHome);
-                listaHome.inserir(noCarta);
-            }
-            LISTAS[i] = listaHome;
-        }
-    }
-
-    /**
-     * Verifica se uma carta é a sequência válida de outra.
-     * Uma carta é válida se for o próximo número na sequência e se ambas as cartas tiverem a mesma cor.
+     * Verifica se duas cartas estão em sequência válida.
      *
-     * @param carta1 A primeira carta a ser validada.
-     * @param carta2 A segunda carta a ser validada.
-     * @return {@code true} se a carta1 for a sequência válida da carta2, caso contrário, {@code false}.
+     * @param carta1 Primeira carta a ser analisada.
+     * @param carta2 Segunda carta a ser analisada.
+     * @return {@code true} se a sequência for válida, {@code false} caso contrário.
      */
     public static boolean cartaSequenciaValida(NoCarta carta1, NoCarta carta2) {
         if (carta1 == null || carta2 == null) {
@@ -206,7 +232,7 @@ public final class JogoApp {
      * @return Um array de {@link ListaHome} contendo as listas do jogo.
      */
     public ListaHome[] getLISTAS() {
-        return LISTAS;
+        return this.LISTAS;
     }
 
     /**
@@ -224,7 +250,7 @@ public final class JogoApp {
      * @return Um array de {@link PilhaHome} contendo as pilhas-base.
      */
     public PilhaHome[] getBASES() {
-        return BASES;
+        return this.BASES;
     }
 
     /**
@@ -233,7 +259,7 @@ public final class JogoApp {
      * @return O {@link Baralho} do jogo.
      */
     public Baralho getBARALHO() {
-        return BARALHO;
+        return this.BARALHO;
     }
 
     public void incrementarMovimentosValidos() {
@@ -311,29 +337,28 @@ public final class JogoApp {
             paraCronometro();
 
             // Inicia o efeito de confetes
-            EfeitoConfetes efeitoConfetes = new EfeitoConfetes(ConfigPadrao.TAMANHO_TELA);
+            Dimension screenSize = frame.getSize();
+            EfeitoConfetes efeitoConfetes = new EfeitoConfetes(screenSize);
 
-            JPanel confetePanel = new JPanel(new BorderLayout());
-            confetePanel.setOpaque(false);
-            confetePanel.setBounds(0, 0, ConfigPadrao.TAMANHO_TELA.width, ConfigPadrao.TAMANHO_TELA.height);
-            confetePanel.add(efeitoConfetes, BorderLayout.CENTER);
+            JPanel confettiPanel = new JPanel(new BorderLayout());
+            confettiPanel.setOpaque(false);
+            confettiPanel.setBounds(0, 0, screenSize.width, screenSize.height);
+            confettiPanel.add(efeitoConfetes, BorderLayout.CENTER);
 
             JLayeredPane layeredPane = frame.getLayeredPane();
-            layeredPane.add(confetePanel, JLayeredPane.POPUP_LAYER);
+            layeredPane.add(confettiPanel, JLayeredPane.POPUP_LAYER);
             efeitoConfetes.startConfettiEffect();
-
-            final int telaWidth = (int) (ConfigPadrao.TAMANHO_TELA.width * 0.4);
-            final int telaHeigth = (int) (ConfigPadrao.TAMANHO_TELA.height * 0.4);
 
             JDialog dialogParabens = new JDialog(frame, "Parabéns!", true);
             dialogParabens.setUndecorated(true);
-            dialogParabens.setSize(telaWidth, telaHeigth);
+            dialogParabens.setSize(500, 300);
             dialogParabens.setLocationRelativeTo(frame);
 
-            ImageIcon imagemParabens = RecursoImagens.getBackground("parabens.png", new Dimension(telaWidth, telaHeigth));
+            ImageIcon imagemParabens = RecursoImagens.getBackground("parabens.png", new Dimension(500, 300));
             FundoPainel painelParabens = new FundoPainel(imagemParabens.getImage());
             painelParabens.setLayout(new BorderLayout());
 
+            // Botão "Continuar"
             JButton btnContinuar = new JButton("Continuar");
             btnContinuar.setFont(new Font("Arial", Font.BOLD, 16));
             btnContinuar.setPreferredSize(new Dimension(300, 40));
@@ -342,7 +367,7 @@ public final class JogoApp {
             btnContinuar.setFocusPainted(false);
             btnContinuar.addActionListener(e -> {
                 dialogParabens.dispose();
-                exibirEstatisticas(efeitoConfetes, layeredPane, confetePanel);
+                exibirEstatisticas(efeitoConfetes, layeredPane, confettiPanel);
             });
 
             painelParabens.add(btnContinuar, BorderLayout.SOUTH);
@@ -352,7 +377,7 @@ public final class JogoApp {
     }
 
     // Adiciona um pequeno atraso antes de exibir a tela de estatísticas
-    private void exibirEstatisticas(EfeitoConfetes efeitoConfetes, JLayeredPane layeredPane, JPanel confetePanel) {
+    private void exibirEstatisticas(EfeitoConfetes efeitoConfetes, JLayeredPane layeredPane, JPanel confettiPanel) {
         SwingUtilities.invokeLater(() -> {
             TelaEstatisticas telaEstatisticas = new TelaEstatisticas(
                     graficoEficiencia,
@@ -368,11 +393,11 @@ public final class JogoApp {
                     movimentosInvalidos,
                     segundosDecorridos
             );
-            telaEstatisticas.addWindowListener(new WindowAdapter() {
+            telaEstatisticas.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
-                public void windowClosed(WindowEvent e) {
+                public void windowClosed(java.awt.event.WindowEvent e) {
                     efeitoConfetes.stopConfettiEffect();
-                    layeredPane.remove(confetePanel);
+                    layeredPane.remove(confettiPanel);
                     layeredPane.repaint();
 
                     frame.dispose();
@@ -382,4 +407,5 @@ public final class JogoApp {
             telaEstatisticas.setVisible(true);
         });
     }
+
 }

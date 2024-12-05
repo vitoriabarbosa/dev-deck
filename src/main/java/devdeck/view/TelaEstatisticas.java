@@ -1,6 +1,5 @@
 package devdeck.view;
 
-import devdeck.utils.ConfigPadrao;
 import devdeck.utils.charts.*;
 import devdeck.utils.component.EfeitoConfetes;
 import org.jfree.chart.ChartPanel;
@@ -9,6 +8,16 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.List;
+
+/**
+ * TelaEstatisticas é um diálogo modal que exibe estatísticas de um jogo,
+ * incluindo gráficos e informações detalhadas de pontuação.
+ *
+ * <p>Esta classe utiliza gráficos personalizados e um efeito de confetes,
+ * se fornecido, para melhorar a experiência visual. As estatísticas exibidas
+ * incluem movimentos válidos e inválidos, pontuação final, tempo total e um
+ * cálculo de esforço total representado pela área sob o progresso dos movimentos.
+ */
 
 public class TelaEstatisticas extends JDialog {
     private final GraficoEficiencia graficoEficiencia;
@@ -23,9 +32,22 @@ public class TelaEstatisticas extends JDialog {
     private final int movimentosInvalidos;
     private final int tempoFinal;
 
-    static final int TELA_WIDTH = (int) (ConfigPadrao.TAMANHO_TELA.width * 0.7);
-    static final int TELA_HEIGTH = (int) (ConfigPadrao.TAMANHO_TELA.height * 0.6);
-
+    /**
+     * Construtor para inicializar os componentes gráficos e as estatísticas.
+     *
+     * @param graficoEficiencia gráfico de eficiência do jogador.
+     * @param graficoMovimentos gráfico de movimentos do jogador.
+     * @param graficoVelocidade gráfico de velocidade do jogador.
+     * @param graficoEsforcoTotal gráfico de esforço total.
+     * @param efeitoConfetes efeito visual opcional de confetes.
+     * @param pontuacao pontuação final do jogador.
+     * @param movimentosValidosAoLongoDoTempo lista de movimentos válidos ao longo do tempo.
+     * @param movimentosInvalidosAoLongoDoTempo lista de movimentos inválidos ao longo do tempo.
+     * @param duracaoPartida lista de tempos ao longo da partida.
+     * @param movimentosValidos número total de movimentos válidos.
+     * @param movimentosInvalidos número total de movimentos inválidos.
+     * @param tempoFinal tempo total da partida em segundos.
+     */
     public TelaEstatisticas(
             GraficoEficiencia graficoEficiencia,
             GraficoMovimentos graficoMovimentos,
@@ -53,7 +75,7 @@ public class TelaEstatisticas extends JDialog {
         this.tempoFinal = tempoFinal;
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(TELA_WIDTH, TELA_HEIGTH);
+        setSize(1200, 700);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         getContentPane().setBackground(new Color(240, 240, 240, 29));
@@ -71,9 +93,12 @@ public class TelaEstatisticas extends JDialog {
         }
     }
 
+    /**
+     * Inicializa o layout da tela, incluindo os gráficos e o painel de estatísticas.
+     */
     private void inicializarLayout() {
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setDividerLocation(ConfigPadrao.TAMANHO_TELA.width / 2 - 130);
+        splitPane.setDividerLocation(750);
 
         // Painel com gráficos
         JPanel painelGraficos = new JPanel(new GridLayout(2, 2, 10, 10));
@@ -110,6 +135,11 @@ public class TelaEstatisticas extends JDialog {
         add(splitPane, BorderLayout.CENTER);
     }
 
+    /**
+     * Cria e retorna um JTextArea com detalhes da pontuação do jogador.
+     *
+     * @return JTextArea contendo informações detalhadas da pontuação.
+     */
     private JTextArea getJTextArea() {
         JTextArea areaTexto = new JTextArea(10, 30);
         areaTexto.setFont(new Font("Monospaced", Font.PLAIN, 15));
@@ -133,7 +163,8 @@ public class TelaEstatisticas extends JDialog {
                 
                  > Esforço Total (Área):      %.2f
                  
-                     O esforço total reflete o trabalho que 
+                 
+                    O esforço total reflete o trabalho que 
                  você fez para concluir o jogo. Ele combina
                  quantos movimentos válidos você fez com a 
                  consistência ao longo do tempo.
@@ -151,12 +182,23 @@ public class TelaEstatisticas extends JDialog {
         return areaTexto;
     }
 
+
+    /**
+     * Calcula o bônus de tempo com base no tempo economizado.
+     *
+     * @return o bônus de tempo em pontos.
+     */
     private int calcularBonusTempo() {
         int tempoEconomizado = Math.max(0, 120 - tempoFinal);
         double multiplicador = 0.5;
         return (int) (tempoEconomizado * multiplicador);
     }
 
+    /**
+     * Calcula a área de progresso do jogador, que reflete o esforço total.
+     *
+     * @return área de progresso como um valor numérico.
+     */
     private double calcularAreaProgresso() {
         double area = 0;
 

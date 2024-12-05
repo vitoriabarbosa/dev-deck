@@ -9,7 +9,10 @@ import org.jfree.data.xy.XYSeriesCollection;
 import java.util.List;
 
 /**
- * Classe para criar um gráfico de Esforço Total ao longo do tempo.
+ * Classe responsável por criar um gráfico que representa o Esforço Total
+ * acumulado ao longo do tempo com base nos dados de um jogo.
+ * O esforço total é calculado como a soma das áreas trapezoidais
+ * entre pontos consecutivos de tempo e progresso.
  */
 public class GraficoEsforcoTotal {
     private final JogoApp jogoApp;
@@ -17,16 +20,18 @@ public class GraficoEsforcoTotal {
     /**
      * Construtor que inicializa o gráfico com os dados do jogo.
      *
-     * @param jogoApp Instância do JogoApp para acessar os dados do jogo.
+     * @param jogoApp Instância de {@link JogoApp} para acessar os dados do jogo.
      */
     public GraficoEsforcoTotal(JogoApp jogoApp) {
         this.jogoApp = jogoApp;
     }
 
     /**
-     * Gera o gráfico de esforço total com base nos dados do jogo.
+     * Gera o gráfico de esforço total acumulado ao longo do tempo.
+     * O esforço total é calculado como a soma das áreas trapezoidais
+     * definidas pelos intervalos de tempo e progresso.
      *
-     * @return Instância de JFreeChart representando o gráfico.
+     * @return Instância de {@link JFreeChart} representando o gráfico de esforço total.
      */
     public JFreeChart getGrafico() {
         // Série de dados para o esforço total
@@ -58,10 +63,10 @@ public class GraficoEsforcoTotal {
 
         // Cria o gráfico de linhas
         return ChartFactory.createXYLineChart(
-                "Esforço Total",
-                "Tempo (s)",
-                "Área Acumulada",
-                dataset
+                "Esforço Total",    // Título do gráfico
+                "Tempo (s)",               // Rótulo do eixo X
+                "Área Acumulada",          // Rótulo do eixo Y
+                dataset                    // Conjunto de dados
         );
     }
 }
